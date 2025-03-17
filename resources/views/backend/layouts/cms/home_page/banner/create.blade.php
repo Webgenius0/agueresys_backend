@@ -30,7 +30,7 @@
                                 <div class="form-group position-relative">
                                     <input type="text"
                                         class="form-control text-dark ps-5 h-55 @error('title') is-invalid @enderror"
-                                        name="title" value="{{ old($data->title, 'title') }}" required
+                                        name="title" value="{{ old('title', $data->title ?? '') }}" required
                                         placeholder="Enter Title here">
                                 </div>
                                 @error('title')
@@ -47,7 +47,7 @@
                                 <div class="form-group position-relative">
                                     <input type="text"
                                         class="form-control text-dark ps-5 h-55 @error('sub_title') is-invalid @enderror"
-                                        name="sub_title" value="{{ old($data->sub_title, 'sub_title') }}"
+                                        name="sub_title" value="{{ old('sub_title', $data->sub_title ?? '') }}"
                                         placeholder="Enter Button Text here">
                                 </div>
                                 @error('sub_title')
