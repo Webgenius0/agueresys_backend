@@ -62,7 +62,7 @@
                             <label class="label text-secondary mb-1">Video<span class="text-danger">*</span></label>
                             <input class="dropify form-control @error('image') is-invalid @enderror" type="file"
                                 name="image" accept="video/*"
-                                data-default-file="{{ $data->image ? asset($data->image) : '' }}">
+                                data-default-file="{{ isset($data) && $data->image ? asset($data->image) : '' }}">
                             @error('image')
                                 <div id="image-error" class="text-danger">{{ $message }}</div>
                             @enderror

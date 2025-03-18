@@ -134,12 +134,15 @@ $systemSetting = App\Models\SystemSetting::first();
                             Banner
                         </a>
                     </li>
-
+                    <li class="menu-item">
+                        <a href="{{ route('cms.home_page.social_link.index') }}"
+                            class="menu-link {{ request()->routeIs('cms.home_page.social_link.*') ? 'active' : '' }}">
+                            Social Link
+                        </a>
+                    </li>
 
                 </ul>
             </li>
-
-
 
 
             <!-- Logout Menu Item -->
