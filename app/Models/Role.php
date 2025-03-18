@@ -28,4 +28,10 @@ class Role extends Model
     {
         return $this->belongsToMany(God::class, 'god_roles')->withTimestamps();
     }
+
+    // Define a relationship with GodRole (a role can be assigned to many gods)
+    public function godRoles()
+    {
+        return $this->hasMany(GodRole::class);
+    }
 }
