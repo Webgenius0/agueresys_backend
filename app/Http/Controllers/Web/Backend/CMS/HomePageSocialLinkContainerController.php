@@ -74,7 +74,7 @@ class HomePageSocialLinkContainerController extends Controller
 
         try {
             if ($request->hasFile('image')) {
-                $validatedData['image'] = Helper::fileUpload($request->file('image'), 'banner', time() . '_' . getFileName($request->file('image')));
+                $validatedData['image'] = Helper::fileUpload($request->file('image'), 'social_link', time() . '_' . getFileName($request->file('image')));
             }
             $validatedData['page'] = Page::HomePage->value;
             $validatedData['section'] = Section::SocialLinkContainer->value;
@@ -112,7 +112,7 @@ class HomePageSocialLinkContainerController extends Controller
                 if ($data && $data->image && file_exists(public_path($data->image))) {
                     Helper::fileDelete(public_path($data->image));
                 }
-                $validatedData['image'] = Helper::fileUpload($request->file('image'), 'banner', time() . '_' . getFileName($request->file('image')));
+                $validatedData['image'] = Helper::fileUpload($request->file('image'), 'social_link', time() . '_' . getFileName($request->file('image')));
             }
 
             $data->update($validatedData);

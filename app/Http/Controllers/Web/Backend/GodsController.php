@@ -47,10 +47,8 @@ class GodsController extends Controller
                     <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="View" onclick="window.location.href=\'' . route('gods.show', $data->id) . '\'">
                         <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
                         </button>
-                        <a type="button" href="javascript:void(0)"
-                                class="ps-0 border-0 bg-transparent lh-1 position-relative top-2"
-                                data-bs-toggle="modal" data-bs-target="#EditCategory" onclick="viewModel(' . $data->id . ')" ><i class="material-symbols-outlined fs-16 text-body">edit</i>
-                            </a>
+                        <a type="button" href="' . route('gods.edit', $data->id) . '" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2"
+                                  ><i class="material-symbols-outlined fs-16 text-body">edit</i></a>
                         <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete" onclick="deleteRecord(event,' . $data->id . ')">
                         <i class="material-symbols-outlined fs-16 text-danger">delete</i>
                         </button>
@@ -119,7 +117,7 @@ class GodsController extends Controller
                     'ability_thumbnail' => $image,
                 ]);
             }
-            
+
             DB::commit();
             flash()->success('Gods created successfully');
             return redirect()->route('gods.index');
@@ -152,8 +150,13 @@ class GodsController extends Controller
     public function show(string $id)
     {
         try {
-            $data = God::with(['abilities','roles','roles.votes'])->findOrFail($id);
-            dd($data->toArray());
+            $data = God::with([
+                'abilities',
+                'godRoles' => function ($query) {
+                    $query->with('role')->withCount(['upvotes', 'downvotes']);
+                }
+            ])->findOrFail($id);
+            // dd($data->toArray());
             return view("backend.layouts.god.show", compact("data"));
         } catch (Exception $e) {
             Log::error("GodsController::show" . $e->getMessage());
@@ -247,7 +250,10 @@ class GodsController extends Controller
         // delete the god
         if (!empty($data->thumbnail)) {
             Helper::fileDelete(public_path($data->thumbnail));
-            $aspects = Ability::where('god_id', $data->id)->get();
+
+        }
+        $aspects = Ability::where('god_id', $data->id)->get();
+        if (!empty($aspects)) {
             foreach ($aspects as $aspect) {
                 if (!empty($aspect->ability_thumbnail)) {
                     Helper::fileDelete(public_path($aspect->ability_thumbnail));

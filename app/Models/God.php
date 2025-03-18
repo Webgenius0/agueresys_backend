@@ -49,4 +49,9 @@ class God extends Model
             $god->roles()->attach($allRoles); // Assign all roles
         });
     }
+
+    public function godRoles()
+    {
+        return $this->hasMany(GodRole::class);
+    }
 }

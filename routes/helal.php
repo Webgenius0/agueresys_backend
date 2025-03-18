@@ -10,6 +10,7 @@
 
 
 use App\Http\Controllers\Web\Backend\CMS\HomePageController;
+use App\Http\Controllers\Web\Backend\CMS\HomePageSocialLinkContainerController;
 use App\Http\Controllers\Web\Backend\GodsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\Backend\ProfileController;
@@ -54,6 +55,9 @@ Route::middleware(['auth:web', 'role_check'])->prefix('admin')->group(function (
   Route::get('/home-page/banner', [HomePageController::class, 'create'])->name('cms.home_page.banner.create');
   Route::Post('/home-page/banner', [HomePageController::class, 'updateBanner'])->name('cms.home_page.banner.update_banner');
 
+  // Route Social link
+  Route::resource('/home-page/social-link/index', HomePageSocialLinkContainerController::class)->names('cms.home_page.social_link')->except('show');
+  Route::post('/home-page/social-link/status/{id}', [HomePageSocialLinkContainerController::class, 'status'])->name('cms.home_page.social_link.status');
 
   // Route GodsController
   Route::resource('/gods', GodsController::class)->names('gods');
