@@ -9,6 +9,7 @@ use App\Models\GodRole;
 use App\Models\Vote;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class VoteController extends Controller
@@ -41,6 +42,7 @@ class VoteController extends Controller
         ]);
 
         try {
+            DB::beginTransaction();
             // Retrieve fingerprint from request headers
             $fingerprint = $request->header('Fingerprint');
             $ipAddress = $request->ip();
@@ -54,7 +56,7 @@ class VoteController extends Controller
             // Check if the anonymous user exists
             if (!$anonymousUser) {
                 AnonymousUser::create([
-                    'ip_address' => $ipAddress. 15,
+                    'ip_address' => $ipAddress . 15,
                     'fingerprint' => $fingerprint
                 ]);
                 $anonymousUser = AnonymousUser::where('fingerprint', $fingerprint)->first();
@@ -89,10 +91,12 @@ class VoteController extends Controller
                 'anonymous_user_id' => $anonymousUserId,
                 'god_role_id' => $request->god_role_id,
             ]);
+            DB::commit();
             return Helper::jsonResponse(true, 'Vote successfully recorded', 200);
         } catch (Exception $e) {
+            DB::rollBack();
             Log::error("VoteController::store" . $e->getMessage());
-            return Helper::jsonErrorResponse('Failed to record vote'.$e->getMessage(), 500);
+            return Helper::jsonErrorResponse('Failed to record vote' . $e->getMessage(), 500);
         }
     }
 

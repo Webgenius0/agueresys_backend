@@ -91,6 +91,7 @@ class GodsController extends Controller
     public function show(Request $request, $id): JsonResponse
     {
         try {
+            DB::beginTransaction();
             $fingerprint = $request->header('Fingerprint');
             $anonymousUser = AnonymousUser::where('fingerprint', $fingerprint)->first();
             // Check if the viewer has already been attached to avoid duplicates
@@ -135,9 +136,10 @@ class GodsController extends Controller
                 $role->is_voted = $vote ? true : false;
                 $role->vote_value = $vote ? $vote->vote : null; // Upvote (1) or Downvote (-1)
             }
-
+            DB::commit();
             return Helper::jsonResponse(true, 'God retrieved successfully.', 200, new GodShowResource($god));
         } catch (Exception $e) {
+            DB::rollBack();
             Log::error("GodsController::show: " . $e->getMessage());
             return Helper::jsonErrorResponse('God not found', 404);
         }
