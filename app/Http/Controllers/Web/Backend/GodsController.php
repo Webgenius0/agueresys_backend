@@ -47,8 +47,7 @@ class GodsController extends Controller
                     <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="View" onclick="window.location.href=\'' . route('gods.show', $data->id) . '\'">
                         <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
                         </button>
-                        <a type="button" href="' . route('gods.edit', $data->id) . '" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2"
-                                  ><i class="material-symbols-outlined fs-16 text-body">edit</i></a>
+                        
                         <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete" onclick="deleteRecord(event,' . $data->id . ')">
                         <i class="material-symbols-outlined fs-16 text-danger">delete</i>
                         </button>
@@ -60,7 +59,8 @@ class GodsController extends Controller
         }
         return view("backend.layouts.god.index");
     }
-
+    // <a type="button" href="' . route('gods.edit', $data->id) . '" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2"
+    // ><i class="material-symbols-outlined fs-16 text-body">edit</i></a>
     /**
      * Show the form for creating a new data.
      */

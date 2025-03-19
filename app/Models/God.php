@@ -55,6 +55,10 @@ class God extends Model
         return $this->hasMany(GodRole::class);
     }
 
+    public function viewers()
+    {
+        return $this->hasMany(GodView::class);
+    }
     public function getThumbnailAttribute($value): string|null
     {
         if (filter_var($value, FILTER_VALIDATE_URL)) {
@@ -69,5 +73,5 @@ class God extends Model
         // Return only the path for web requests
         return $value;
     }
-    
+
 }
