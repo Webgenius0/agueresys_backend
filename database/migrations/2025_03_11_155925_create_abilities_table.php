@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('god_id')->constrained()->onDelete('cascade');
             $table->string('ability_thumbnail')->nullable();
-            $table->text('description')->nullable();
+            $table->longText('description')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
         });
