@@ -155,7 +155,9 @@ class GodsController extends Controller
                 'godRoles' => function ($query) {
                     $query->with('role')->withCount(['upvotes', 'downvotes']);
                 }
-            ])->findOrFail($id);
+            ])
+            ->withCount('viewers')
+            ->findOrFail($id);
             // dd($data->toArray());
             return view("backend.layouts.god.show", compact("data"));
         } catch (Exception $e) {
