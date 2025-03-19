@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('anonymous_users', function (Blueprint $table) {
             $table->id();
-            $table->string('ip_address')->unique()->nullable();
-            $table->string('fingerprint')->unique()->nullable();
+            $table->string('ip_address')->nullable();
+            $table->string('fingerprint')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
         });

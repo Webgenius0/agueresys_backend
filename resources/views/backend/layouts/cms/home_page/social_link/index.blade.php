@@ -158,8 +158,8 @@
                         }
                     },
                     {
-                        data: 'description',
-                        name: 'description',
+                        data: 'link_url',
+                        name: 'link_url',
                         orderable: true,
                         searchable: true,
                         render: function(data, type, row) {

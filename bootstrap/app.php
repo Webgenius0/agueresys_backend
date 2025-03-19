@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'role_check' => \App\Http\Middleware\RoleCheckMiddleWare::class,
+            'check_anonymous_user' => \App\Http\Middleware\checkAnonymousUser::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

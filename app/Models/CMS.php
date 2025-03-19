@@ -21,4 +21,33 @@ class CMS extends Model
         'link_url',         // URL link for the button or other purpose
         'status',            // Status of the section (e.g., active, inactive)
     ];
+
+    public function getImageAttribute($value): string|null
+    {
+        if (filter_var($value, FILTER_VALIDATE_URL)) {
+            return $value;
+        }
+        // Check if the request is an API request
+        if (request()->is('api/*') && !empty($value)) {
+            // Return the full URL for API requests
+            return url($value);
+        }
+
+        // Return only the path for web requests
+        return $value;
+    }
+    public function getBackgroundImageAttribute($value): string|null
+    {
+        if (filter_var($value, FILTER_VALIDATE_URL)) {
+            return $value;
+        }
+        // Check if the request is an API request
+        if (request()->is('api/*') && !empty($value)) {
+            // Return the full URL for API requests
+            return url($value);
+        }
+
+        // Return only the path for web requests
+        return $value;
+    }
 }

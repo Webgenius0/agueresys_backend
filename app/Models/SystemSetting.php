@@ -40,4 +40,28 @@ class SystemSetting extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    public function getFileUrlAttribute($value): ?string
+    {
+        if (filter_var($value, FILTER_VALIDATE_URL)) {
+            return $value;
+        }
+
+        if (request()->is('api/*') && !empty($value)) {
+            return url($value);
+        }
+
+        return $value;
+    }
+
+    // Use this function in your existing attributes
+    public function getLogoAttribute($value): ?string
+    {
+        return $this->getFileUrlAttribute($value);
+    }
+
+    public function getFaviconAttribute($value): ?string
+    {
+        return $this->getFileUrlAttribute($value);
+    }
 }
