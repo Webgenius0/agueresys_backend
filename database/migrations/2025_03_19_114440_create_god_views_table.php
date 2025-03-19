@@ -4,18 +4,17 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('anonymous_users', function (Blueprint $table) {
+        Schema::create('god_views', function (Blueprint $table) {
             $table->id();
-            $table->string('ip_address')->nullable();
+            $table->foreignId('god_id')->constrained()->onDelete('cascade');
+            $table->foreignId('anonymous_user_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('fingerprint')->nullable();
-            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('anonymous_users');
+        Schema::dropIfExists('god_views');
     }
 };
