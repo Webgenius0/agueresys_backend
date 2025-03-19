@@ -68,7 +68,7 @@ class HomePageSocialLinkContainerController extends Controller
 
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
+            'link_url' => 'required|url|active_url',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
@@ -103,7 +103,7 @@ class HomePageSocialLinkContainerController extends Controller
     {
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
+            'link_url' => 'required|url|active_url',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
         try {

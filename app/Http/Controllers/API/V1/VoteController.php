@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers\API\V1;
 
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\Models\AnonymousUser;
 use App\Models\GodRole;
 use App\Models\Vote;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class VoteController extends Controller
 {
@@ -30,31 +34,66 @@ class VoteController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'anonymous_user_id' => 'required|exists:anonymous_users,id',
+        $validatedData = $request->validate([
+            // 'anonymous_user_id' => 'required|exists:anonymous_users,id',
             'god_role_id' => 'required|exists:god_roles,id',
+            'vote' => 'required|in:up,down',
         ]);
 
-        $anonymousUserId = $request->anonymous_user_id;
-        $godRole = GodRole::findOrFail($request->god_role_id);
-        $godId = $godRole->god_id;
+        try {
+            // Retrieve fingerprint from request headers
+            $fingerprint = $request->header('Fingerprint');
+            $ipAddress = $request->ip();
 
-        // Count how many roles this user already voted for this god
-        $voteCount = Vote::whereHas('godRole', function ($query) use ($godId) {
-            $query->where('god_id', $godId);
-        })->where('anonymous_user_id', $anonymousUserId)->count();
+            if (!$fingerprint) {
+                return response()->json(['message' => 'Fingerprint header missing'], 400);
+            }
 
-        if ($voteCount >= 2) {
-            return response()->json(['message' => 'You can only vote for 2 roles per god'], 403);
+            $fingerprint = $request->header('Fingerprint');
+            $anonymousUser = AnonymousUser::where('fingerprint', $fingerprint)->first();
+            // Check if the anonymous user exists
+            if (!$anonymousUser) {
+                AnonymousUser::create([
+                    'ip_address' => $ipAddress. 15,
+                    'fingerprint' => $fingerprint
+                ]);
+                $anonymousUser = AnonymousUser::where('fingerprint', $fingerprint)->first();
+            }
+
+            $anonymousUserId = $anonymousUser->id;
+            $godRole = GodRole::findOrFail($request->god_role_id);
+            $godId = $godRole->god_id;
+            //if exits vote
+            $vote = Vote::where('anonymous_user_id', $anonymousUserId)->where('god_role_id', $request->god_role_id)->first();
+            if ($vote) {
+                if ($vote->vote === $validatedData['vote']) {
+                    $vote->delete();
+                    return Helper::jsonErrorResponse('Your vote has been changed and deleted', 403);
+                } else {
+                    $vote->update(['vote' => $validatedData['vote']]);
+                    return Helper::jsonResponse(true, 'Vote successfully recorded', 200);
+                }
+            }
+
+            // Count how many roles this user already voted for this god
+            $voteCount = Vote::whereHas('godRole', function ($query) use ($godId) {
+                $query->where('god_id', $godId);
+            })->where('anonymous_user_id', $anonymousUserId)->count();
+
+            if ($voteCount >= 2) {
+                return Helper::jsonErrorResponse('You can only vote for 2 roles per god', 403);
+            }
+
+            // Store the vote
+            Vote::create([
+                'anonymous_user_id' => $anonymousUserId,
+                'god_role_id' => $request->god_role_id,
+            ]);
+            return Helper::jsonResponse(true, 'Vote successfully recorded', 200);
+        } catch (Exception $e) {
+            Log::error("VoteController::store" . $e->getMessage());
+            return Helper::jsonErrorResponse('Failed to record vote'.$e->getMessage(), 500);
         }
-
-        // Store the vote
-        Vote::create([
-            'anonymous_user_id' => $anonymousUserId,
-            'god_role_id' => $request->god_role_id,
-        ]);
-
-        return response()->json(['message' => 'Vote successfully recorded']);
     }
 
 

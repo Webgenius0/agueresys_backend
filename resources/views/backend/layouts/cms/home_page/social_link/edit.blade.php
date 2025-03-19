@@ -47,12 +47,12 @@
                                         class="text-danger">*</span></label>
                                 <div class="form-group position-relative">
                                     <input type="text"
-                                        class="form-control text-dark ps-5 h-55 @error('description') is-invalid @enderror"
-                                        name="description" value="{{ old('description', $data->description) }}"
+                                        class="form-control text-dark ps-5 h-55 @error('link_url') is-invalid @enderror"
+                                        name="link_url" value="{{ old('link_url', $data->link_url) }}"
                                         placeholder="Enter Social Profile Link here">
                                 </div>
-                                @error('description')
-                                    <div id="description-error" class="text-danger">{{ $message }}</div>
+                                @error('link_url')
+                                    <div id="link_url-error" class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
