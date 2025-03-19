@@ -38,6 +38,8 @@
                             {{ $data->description }}</p>
                         <p class="fs-15 text-dark"><span class="font-weight-bold">Aspect Description:</span>
                             {{ $data->aspect_description }}</p>
+                        <p class="fs-15 text-dark"><span class="font-weight-bold">Viewers:</span>
+                            {{ $data->viewers_count }}</p>
                     </div>
                 </div>
 
