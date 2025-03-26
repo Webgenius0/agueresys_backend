@@ -1,26 +1,20 @@
 @extends('errors::minimal')
 
-@section('content')
-    <!-- main section start -->
-    <main>
-        <section class="container error-container">
-            <div class="row">
-                <div class="col-md-6">
-                    <figure class="error-img">
-                        <img src="{{asset('frontend/assets')}}/images/404.png" alt="">
-                    </figure>
-                </div>
-                <div class="col-md-6">
-                    <h2 class="title">Oops! Page Not Found</h2>
-                    <p class="des">
-                        You must have picked the worng door because I haven’t been able to
-                        lay my eye on the page you’ve been searching for.
-                    </p>
-                    <a href="/" class="button">Back to home</a>
-                </div>
-            </div>
-        </section>
-    </main>
-    <!-- main section end -->
-@endsection
+@section('title', __('Service Unavailable'))
+@section('code', '503')
+@section('message', __('We are currently undergoing maintenance. Please check back later.'))
 
+@section('content')
+    <div class="container-fluid">
+        <div class="main-content d-flex flex-column p-0">
+            <div class="m-auto text-center">
+                <img src="{{ asset('backend/admin/assets/images/error.png') }}" class="mw-430 mb-4 w-100" alt="error">
+                <h3 class="fs-24 mb-3">{{ __('Service Unavailable') }}</h3>
+                <p class="mb-4">{{ __('We are currently performing maintenance. We will be back soon!') }}</p>
+                <a href="{{ route('home') }}" class="btn btn-primary py-2 px-4 fs-16 fw-medium">
+                    <span class="d-inline-block py-1">{{ __('Back To Home') }}</span>
+                </a>
+            </div>
+        </div>
+    </div>
+@endsection
