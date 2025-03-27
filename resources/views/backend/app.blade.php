@@ -17,7 +17,7 @@
     <link rel="icon" type="image/png"
         href="{{ asset($systemSetting->favicon ?? 'backend/admin/assets/favicon.ico') }} ">
     <!-- Title -->
-    <title>@yield('title') | {{ $systemSetting->system_name ?? 'Switch' }} </title>
+    <title>@yield('title') | {{ $systemSetting->system_name ?? '' }} </title>
     {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
 </head>
 

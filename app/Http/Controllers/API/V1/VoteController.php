@@ -77,7 +77,7 @@ class VoteController extends Controller
                 } else {
                     // dd('change vote');
                     $vote->update(['vote' => $validatedData['vote']]);
-                    Log::info('Vote updated successfully' . $vote);
+                    // Log::info('Vote updated successfully' . $vote);
                     DB::commit();
                     return Helper::jsonResponse(true, 'Vote successfully recorded', 200);
                 }
@@ -98,7 +98,7 @@ class VoteController extends Controller
                     'vote' => $validatedData['vote']
                 ]);
             }
-            Log::info('last vote' . $vote);
+            // Log::info('last vote' . $vote);
 
             DB::commit();
             return Helper::jsonResponse(true, 'Vote successfully recorded', 200);
