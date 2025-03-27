@@ -73,7 +73,7 @@ class VoteController extends Controller
                     // dd('old vote');
                     $vote->delete();
                     DB::commit();
-                    return Helper::jsonErrorResponse('Your vote has been changed and deleted', 403);
+                    return Helper::jsonErrorResponse('Your vote has been changed and deleted', 200);
                 } else {
                     // dd('change vote');
                     $vote->update(['vote' => $validatedData['vote']]);
