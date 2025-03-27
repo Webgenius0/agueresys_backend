@@ -68,29 +68,38 @@ class VoteController extends Controller
             //if exits vote
             $vote = Vote::where('anonymous_user_id', $anonymousUserId)->where('god_role_id', $request->god_role_id)->first();
             if ($vote) {
+                // dd($vote->toArray());
                 if ($vote->vote === $validatedData['vote']) {
+                    // dd('old vote');
                     $vote->delete();
+                    DB::commit();
                     return Helper::jsonErrorResponse('Your vote has been changed and deleted', 403);
                 } else {
+                    // dd('change vote');
                     $vote->update(['vote' => $validatedData['vote']]);
+                    Log::info('Vote updated successfully' . $vote);
+                    DB::commit();
                     return Helper::jsonResponse(true, 'Vote successfully recorded', 200);
                 }
+            } else {
+                // Count how many roles this user already voted for this god
+                $voteCount = Vote::whereHas('godRole', function ($query) use ($godId) {
+                    $query->where('god_id', $godId);
+                })->where('anonymous_user_id', $anonymousUserId)->count();
+
+                if ($voteCount >= 2) {
+                    return Helper::jsonErrorResponse('You can only vote for 2 roles per god', 403);
+                }
+
+                // Store the vote
+                Vote::create([
+                    'anonymous_user_id' => $anonymousUserId,
+                    'god_role_id' => $request->god_role_id,
+                    'vote' => $validatedData['vote']
+                ]);
             }
+            Log::info('last vote' . $vote);
 
-            // Count how many roles this user already voted for this god
-            $voteCount = Vote::whereHas('godRole', function ($query) use ($godId) {
-                $query->where('god_id', $godId);
-            })->where('anonymous_user_id', $anonymousUserId)->count();
-
-            if ($voteCount >= 2) {
-                return Helper::jsonErrorResponse('You can only vote for 2 roles per god', 403);
-            }
-
-            // Store the vote
-            Vote::create([
-                'anonymous_user_id' => $anonymousUserId,
-                'god_role_id' => $request->god_role_id,
-            ]);
             DB::commit();
             return Helper::jsonResponse(true, 'Vote successfully recorded', 200);
         } catch (Exception $e) {
