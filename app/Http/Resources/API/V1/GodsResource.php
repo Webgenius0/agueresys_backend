@@ -16,6 +16,7 @@ class GodsResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'slug' => $this->slug,
             'title' => $this->title,
             'sub_title' => $this->sub_title,
             'description_title' => $this->description_title,

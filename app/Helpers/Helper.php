@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Models\SystemSetting;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Kreait\Firebase\Factory;
@@ -39,10 +40,10 @@ class Helper
     }
 
     //! Generate Slug
-    public static function makeSlug($model, string $title): string
+    public static function makeSlug(string $title, $table): string
     {
         $slug = Str::slug($title);
-        while ($model::where('slug', $slug)->exists()) {
+        while (DB::table($table)->where('slug', $slug)->exists()) {
             $randomString = Str::random(5);
             $slug = Str::slug($title) . '-' . $randomString;
         }
@@ -106,29 +107,4 @@ class Helper
     }
 
 
-    public static function sendNotifyMobile($token, $notifyData): void
-    {
-        try {
-            $SystemSetting = SystemSetting::first();
-            if ($SystemSetting) {
-                $app_logo = $SystemSetting->logo;
-            } else {
-                $app_logo = 'logo.png';
-            }
-
-            $factory = (new Factory)->withServiceAccount(storage_path('app/private/easy-to-manage-firebase-adminsdk-76x4g-a33d9372d7.json'));
-            
-            $messaging = $factory->createMessaging();
-            $notification = Notification::create(
-                $notifyData['title'],
-                Str::limit($notifyData['body'], 100),
-                $app_logo
-            );
-            $message = CloudMessage::withTarget('token', $token)->withNotification($notification);
-            $messaging->send($message);
-            Log::error("firebase notification success");
-        } catch (\Exception $exception) {
-            Log::error($exception);
-        }
-    }
 }

@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->longText('description')->nullable();
             $table->string('thumbnail')->nullable();
             $table->longText('aspect_description')->nullable();
+            $table->string('slug')->unique();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
         });
