@@ -2,10 +2,8 @@
 @section('title', 'God Details')
 
 @push('styles')
-
     <!-- Font Awesome CDN -->
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 @endpush
 
 @section('content')
@@ -53,51 +51,77 @@
                         <p><strong>Created At:</strong> {{ $data->created_at->diffForHumans() }}</p>
                         <p><strong>Updated At:</strong> {{ $data->updated_at->diffForHumans() }}</p>
                     </div>
-                
+
                 </div>
-           <hr/>
+                <hr />
                 {{-- Abilities images --}}
                 <div class="mt-4">
                     @if ($data->abilities->count() > 0)
-                        <h5 class="text-primary">Abilities</h5>
+                        <h5 class="text-primary text-center">Abilities</h5>
                         <div class="row">
-                            @foreach ($data->abilities as $ability)
-                                <div class="col-md-1 text-center gap-3">
-                                    <p class="font-weight-bold">{{ $ability->name }}</p>
-                                    @if ($ability->ability_thumbnail)
-                                        <img src="{{ asset($ability->ability_thumbnail) }}" alt="{{ $ability->name }}"
-                                            class="img-fluid rounded" style="max-width: 100px;">
-                                    @endif
-                                </div>
-                            @endforeach
+                            <table class="table table-bordered table-hover text-center align-middle">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Thumbnail</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($data->abilities as $ability)
+                                        <tr>
+                                            <td>
+                                                @if ($ability->ability_thumbnail)
+                                                    <img src="{{ asset($ability->ability_thumbnail) }}"
+                                                        alt="{{ $ability->name }}" class="img-thumbnail rounded"
+                                                        style="max-width: 100px; height: auto;">
+                                                @else
+                                                    <span class="text-muted">No Image</span>
+                                                @endif
+                                            </td>
+                                            <td>{{ $ability->description ?? 'No Description' }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+
                         </div>
                     @endif
                 </div>
-                <hr/>
+                <hr />
                 {{-- Display Roles --}}
                 @if ($data->godRoles->count() > 0)
                     <div class="mt-4">
-                        <h5 class="text-primary">Roles</h5>
-                        <table class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th><i class="fas fa-users"></i> Role</th> {{-- Icon for Role --}}
-                                    <th><i class="fas fa-thumbs-up"></i> Upvotes</th> {{-- Icon for Upvotes --}}
-                                    <th><i class="fas fa-thumbs-down"></i> Downvotes</th> {{-- Icon for Downvotes --}}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($data->godRoles as $godRole)
+                        {{-- <h5 class="text-primary fw-bold">
+            <i class="fas fa-user-shield me-2"></i> Roles
+        </h5> --}}
+                        <div class="table-responsive">
+                            <table
+                                class="table table-bordered table-striped table-hover text-center align-middle shadow-sm">
+                                <thead class="table-dark">
                                     <tr>
-                                        <td>{{ $godRole->role->name }}</td>
-                                        <td>{{ $godRole->upvotes_count }}</td>
-                                        <td>{{ $godRole->downvotes_count }}</td>
+                                        <th><i class="fas fa-users me-2"></i> Role</th>
+                                        <th><i class="fas fa-thumbs-up me-2 text-success"></i> Upvotes</th>
+                                        <th><i class="fas fa-thumbs-down me-2 text-danger"></i> Downvotes</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach ($data->godRoles as $godRole)
+                                        <tr>
+                                            <td class="fw-semibold">{{ $godRole->role->name }}</td>
+                                            <td class="text-success fw-bold">
+                                                <i class="fas fa-arrow-up me-1"></i> {{ $godRole->upvotes_count }}
+                                            </td>
+                                            <td class="text-danger fw-bold">
+                                                <i class="fas fa-arrow-down me-1"></i> {{ $godRole->downvotes_count }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 @endif
+
 
             </div>
         </div>

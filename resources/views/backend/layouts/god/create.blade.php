@@ -45,7 +45,7 @@
                                 <div class="form-group position-relative">
                                     <input type="text"
                                         class="form-control text-dark ps-5 h-55 @error('sub_title') is-invalid @enderror"
-                                        name="sub_title" value="{{ old('sub_title') }}" placeholder="Enter sub title here">
+                                        name="sub_title" value="{{ old('sub_title') }}" placeholder="Enter sub title here" required>
                                 </div>
                                 @error('sub_title')
                                     <div id="sub_title-error" class="text-danger">{{ $message }}</div>
@@ -62,7 +62,7 @@
                                     <input type="text"
                                         class="form-control text-dark ps-5 h-55 @error('description_title') is-invalid @enderror"
                                         name="description_title" value="{{ old('description_title') }}"
-                                        placeholder="Enter description title here">
+                                        placeholder="Enter description title here" required>
                                 </div>
                                 @error('description_title')
                                     <div id="description_title-error" class="text-danger">{{ $message }}</div>
@@ -75,7 +75,7 @@
                                 <label class="label text-secondary">Description<span class="text-danger">*</span></label>
                                 <div class="form-group position-relative">
                                     <textarea class="form-control text-dark ps-5 h-55 @error('description') is-invalid @enderror" name="description"
-                                        placeholder="Enter description here">{{ old('description') }}</textarea>
+                                        placeholder="Enter description here" required>{{ old('description') }}</textarea>
                                 </div>
                                 @error('description')
                                     <div id="description-error" class="text-danger">{{ $message }}</div>
@@ -83,7 +83,7 @@
                             </div>
                         </div>
                         <!-- 5th aspect_description Field -->
-                        <div class="col-lg-6">
+                        {{-- <div class="col-lg-6">
                             <div class="form-group mb-4">
                                 <label class="label text-secondary">Aspect Description<span
                                         class="text-danger">*</span></label>
@@ -95,13 +95,13 @@
                                     <div id="aspect_description-error" class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div>
+                        </div> --}}
                         <!-- 6th Thumbnail Field -->
-                        <div class="col-lg-6">
+                        <div class="col-lg-12">
                             <div class="form-group ">
                                 <label class="label text-secondary mb-1">Thumbnail<span class="text-danger">*</span></label>
                                 <input class="dropify form-control @error('thumbnail') is-invalid @enderror" type="file"
-                                    name="thumbnail" accept="image/*">
+                                    name="thumbnail" accept="image/*" required>
                                 @error('thumbnail')
                                     <div id="thumbnail-error" class="text-danger">{{ $message }}</div>
                                 @enderror
@@ -109,11 +109,15 @@
                         </div>
 
                     </div>
-
+                    {{-- <div class="bg-light ">
+                        <hr>
+                        <h6 class="text-primary text-center">God Abilities</h6>
+                        <hr>
+                    </div> --}}
                     <!-- Aspects Image Upload -->
                     <div class="col-md-12">
                         <div class="form-group mb-4">
-                            <label class="label text-secondary">Aspects Images<span style="color: red">*</span></label>
+                            <label class="label text-secondary">Ability Images<span style="color: red">*</span></label>
                             <div id="gallery-dropzone"
                                 class="dropzone border rounded p-4 d-flex align-items-center justify-content-center">
                                 <div class="text-center">
@@ -129,11 +133,11 @@
                             @enderror
                         </div>
                     </div>
-
                     <!-- Preview Container -->
                     <div class="col-md-12 mt-3">
                         <div id="preview-container" class="d-flex flex-wrap gap-3"></div>
                     </div>
+
             </div>
 
             <div class="row">
@@ -171,7 +175,7 @@
             const dropzone = $('#gallery-dropzone');
             const previewContainer = $('#preview-container');
             const galleryImagesInput = $('#gallery-images')[0];
-            const maxFiles = 20; // Maximum allowed file uploads
+            const maxFiles = 6; // Maximum allowed file uploads
 
             dropzone.on('dragover', function(event) {
                 event.preventDefault();
@@ -229,7 +233,7 @@
                             uploadedImages.push(file);
                             updateGalleryImagesInput();
 
-                            // Create preview
+                            // Create preview card
                             let previewCard = $('<div>', {
                                 class: 'position-relative rounded overflow-hidden shadow-sm m-2'
                             });
@@ -252,7 +256,28 @@
                                 updateGalleryImagesInput();
                             });
 
-                            previewCard.append(imgElement, deleteButton);
+                            // Create description field
+                            let descriptionField = $('<div>', {
+                                class: 'form-group mb-4'
+                            });
+
+                            let label = $('<label>', {
+                                class: 'label text-secondary',
+                                text: 'Ability Description'
+                            }).append('<span class="text-danger">*</span>');
+
+                            let textarea = $('<textarea>', {
+                                class: 'form-control text-dark ps-5 h-55',
+                                name: 'aspect_description[]',
+                                placeholder: 'Enter aspect description here',
+                                required: true
+                            });
+
+
+                            descriptionField.append(label, textarea);
+
+                            // Append image and description to preview card
+                            previewCard.append(imgElement, deleteButton, descriptionField);
                             previewContainer.append(previewCard);
                         };
                         reader.readAsDataURL(file);

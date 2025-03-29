@@ -57,7 +57,7 @@
                             <div class="form-group position-relative">
                                 <input type="text"
                                     class="form-control text-dark ps-5 h-55 @error('title') is-invalid @enderror"
-                                    name="title" value="{{ old('title', $settings->title ?? '') }}" required
+                                    name="title" value="{{ old('title', $settings->title ?? '') }}"
                                     placeholder="Enter Title here">
                             </div>
                             @error('title')
@@ -71,7 +71,7 @@
                             <div class="form-group position-relative">
                                 <input type="text"
                                     class="form-control text-dark ps-5 h-55 @error('system_name') is-invalid @enderror"
-                                    name="system_name" value="{{ old('system_name', $settings->system_name ?? '') }}" required
+                                    name="system_name" value="{{ old('system_name', $settings->system_name ?? '') }}"
                                     placeholder="Enter system name here">
                             </div>
                             @error('system_name')
@@ -86,7 +86,7 @@
                             <div class="form-group position-relative">
                                 <input type="text"
                                     class="form-control text-dark ps-5 h-55 @error('contact_number') is-invalid @enderror"
-                                    name="contact_number" value="{{ old('contact_number', $settings->contact_number ?? '') }}" required
+                                    name="contact_number" value="{{ old('contact_number', $settings->contact_number ?? '') }}"
                                     placeholder="Enter contact number here">
                             </div>
                             @error('contact_number')
@@ -101,7 +101,7 @@
                             <div class="form-group position-relative">
                                 <input type="email"
                                     class="form-control text-dark ps-5 h-55 @error('email') is-invalid @enderror"
-                                    name="email" value="{{ old('email', $settings->email ?? '') }}" required
+                                    name="email" value="{{ old('email', $settings->email ?? '') }}"
                                     placeholder="Enter email here">
                             </div>
                             @error('email')
@@ -116,7 +116,7 @@
                             <div class="form-group position-relative">
                                 <input type="text"
                                     class="form-control text-dark ps-5 h-55 @error('copyright_text') is-invalid @enderror"
-                                    name="copyright_text" value="{{ old('copyright_text', $settings->copyright_text ?? '') }}" required
+                                    name="copyright_text" value="{{ old('copyright_text', $settings->copyright_text ?? '') }}"
                                     placeholder="Enter copyright text here">
                             </div>
                             @error('copyright_text')
@@ -130,7 +130,7 @@
                             <label class="label text-secondary">Description</label>
                             <div class="form-group position-relative">
                                 <textarea class="form-control text-dark ps-5 h-55 @error('description') is-invalid @enderror"
-                                    name="description" required
+                                    name="description"
                                     placeholder="Enter description here">{{ old('description', $settings->description ?? '') }}</textarea>
                             </div>
                             @error('description')

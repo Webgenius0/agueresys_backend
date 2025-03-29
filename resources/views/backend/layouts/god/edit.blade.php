@@ -8,19 +8,20 @@
 @section('content')
     <div class="main-content-container overflow-hidden">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
-            <h3 class="mb-0">Create God</h3>
+            <h3 class="mb-0">Edit God</h3>
         </div>
 
         <div class="card bg-white border-0 rounded-3 mb-4">
             <div class="card-body p-4">
 
                 <div class="mb-4">
-                    <h4 class="fs-20 mb-1">Create God</h4>
-                    <p class="fs-15">Create new god and more details here.</p>
+                    <h4 class="fs-20 mb-1">Edit God</h4>
+                    <p class="fs-15">Edit god and more details here.</p>
                 </div>
 
-                <form action="{{ route('gods.update', $data->id) }}') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('gods.update', $data->id)}}" method="POST" enctype="multipart/form-data">
                     @csrf
+                    @method('PUT')
                     <div class="row">
                         <!-- Title Field -->
                         <div class="col-lg-6">
@@ -29,7 +30,8 @@
                                 <div class="form-group position-relative">
                                     <input type="text"
                                         class="form-control text-dark ps-5 h-55 @error('title') is-invalid @enderror"
-                                        name="title" value="{{ old('title') }}" required placeholder="Enter Title here">
+                                        name="title" value="{{ old('title', $data->title ?? '') }}" required
+                                        placeholder="Enter Title here">
                                 </div>
                                 @error('title')
                                     <div id="title-error" class="text-danger">{{ $message }}</div>
@@ -45,7 +47,8 @@
                                 <div class="form-group position-relative">
                                     <input type="text"
                                         class="form-control text-dark ps-5 h-55 @error('sub_title') is-invalid @enderror"
-                                        name="sub_title" value="{{ old('sub_title') }}" placeholder="Enter sub title here">
+                                        name="sub_title" value="{{ old('sub_title', $data->sub_title ?? '') }}"
+                                        placeholder="Enter sub title here">
                                 </div>
                                 @error('sub_title')
                                     <div id="sub_title-error" class="text-danger">{{ $message }}</div>
@@ -61,7 +64,8 @@
                                 <div class="form-group position-relative">
                                     <input type="text"
                                         class="form-control text-dark ps-5 h-55 @error('description_title') is-invalid @enderror"
-                                        name="description_title" value="{{ old('description_title') }}"
+                                        name="description_title"
+                                        value="{{ old('description_title', $data->description_title ?? '') }}"
                                         placeholder="Enter description title here">
                                 </div>
                                 @error('description_title')
@@ -75,7 +79,7 @@
                                 <label class="label text-secondary">Description<span class="text-danger">*</span></label>
                                 <div class="form-group position-relative">
                                     <textarea class="form-control text-dark ps-5 h-55 @error('description') is-invalid @enderror" name="description"
-                                        placeholder="Enter description here">{{ old('description') }}</textarea>
+                                        placeholder="Enter description here">{{ old('description', $data->description ?? '') }}</textarea>
                                 </div>
                                 @error('description')
                                     <div id="description-error" class="text-danger">{{ $message }}</div>
@@ -83,25 +87,26 @@
                             </div>
                         </div>
                         <!-- 5th aspect_description Field -->
-                        <div class="col-lg-6">
+                        {{-- <div class="col-lg-6">
                             <div class="form-group mb-4">
                                 <label class="label text-secondary">Aspect Description<span
                                         class="text-danger">*</span></label>
                                 <div class="form-group position-relative">
                                     <textarea class="form-control text-dark ps-5 h-55 @error('aspect_description') is-invalid @enderror"
-                                        name="aspect_description" placeholder="Enter aspect description here">{{ old('aspect_description') }}</textarea>
+                                        name="aspect_description" placeholder="Enter aspect description here">{{ old('aspect_description', $data->aspect_description ?? '') }}</textarea>
                                 </div>
                                 @error('aspect_description')
                                     <div id="aspect_description-error" class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
-                        </div>
+                        </div> --}}
                         <!-- 6th Thumbnail Field -->
-                        <div class="col-lg-6">
+                        <div class="col-lg-12">
                             <div class="form-group ">
                                 <label class="label text-secondary mb-1">Thumbnail<span class="text-danger">*</span></label>
                                 <input class="dropify form-control @error('thumbnail') is-invalid @enderror" type="file"
-                                    name="thumbnail" accept="image/*">
+                                    name="thumbnail" accept="image/*"
+                                    data-default-file="{{ isset($data) && $data->thumbnail ? asset($data->thumbnail) : '' }}">
                                 @error('thumbnail')
                                     <div id="thumbnail-error" class="text-danger">{{ $message }}</div>
                                 @enderror
@@ -113,7 +118,7 @@
                     <!-- Aspects Image Upload -->
                     <div class="col-md-12">
                         <div class="form-group mb-4">
-                            <label class="label text-secondary">Aspects Images<span style="color: red">*</span></label>
+                            <label class="label text-secondary">Ability Images<span style="color: red">*</span></label>
                             <div id="gallery-dropzone"
                                 class="dropzone border rounded p-4 d-flex align-items-center justify-content-center">
                                 <div class="text-center">
@@ -132,24 +137,39 @@
 
                     <!-- Preview Container -->
                     <div class="col-md-12 mt-3">
-                        <div id="preview-container" class="d-flex flex-wrap gap-3"></div>
+                        <div id="preview-container" class="d-flex flex-wrap gap-3">
+                            @if (isset($data) && $data->abilities)
+                                @foreach (json_decode($data->abilities) as $image)
+                                    <div class="preview-item">
+                                        <div class="position-relative rounded overflow-hidden shadow-sm m-2">
+                                            <img src="{{ asset($image->ability_thumbnail) }}" alt=""
+                                                class=" img-thumbnail rounded" style="height: 200px; width: 200px">
+                                                <textarea class="form-control text-dark" style="height: 100px" disabled>{{ $image->description }}</textarea>
+                                            <button
+                                                class="position-absolute top-0 end-0 btn-sm btn-danger rounded-circle">&times;</button>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
+                        </div>
                     </div>
-            </div>
-
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="d-flex flex-wrap gap-3">
-                        <a href="{{ route('gods.index') }}"
-                            class="btn btn-danger py-2 px-4 fw-medium fs-16 text-white">Cancle</a>
-                        <button type="submit" class="btn btn-primary py-2 px-4 fw-medium fs-16"> <i
-                                class="ri-check-line text-white fw-medium"></i> Submit </button>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="d-flex flex-wrap gap-3">
+                                <a href="{{ route('gods.index') }}"
+                                    class="btn btn-danger py-2 px-4 fw-medium fs-16 text-white">Cancle</a>
+                                <button type="submit" class="btn btn-primary py-2 px-4 fw-medium fs-16"> <i
+                                        class="ri-check-line text-white fw-medium"></i> Update </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
-            </form>
         </div>
-    </div>
 
+
+    </div>
+    </div>
 
 
 @endsection
@@ -171,7 +191,7 @@
             const dropzone = $('#gallery-dropzone');
             const previewContainer = $('#preview-container');
             const galleryImagesInput = $('#gallery-images')[0];
-            const maxFiles = 20; // Maximum allowed file uploads
+            const maxFiles = 6; // Maximum allowed file uploads
 
             dropzone.on('dragover', function(event) {
                 event.preventDefault();
@@ -229,7 +249,7 @@
                             uploadedImages.push(file);
                             updateGalleryImagesInput();
 
-                            // Create preview
+                            // Create preview card
                             let previewCard = $('<div>', {
                                 class: 'position-relative rounded overflow-hidden shadow-sm m-2'
                             });
@@ -252,7 +272,28 @@
                                 updateGalleryImagesInput();
                             });
 
-                            previewCard.append(imgElement, deleteButton);
+                            // Create description field
+                            let descriptionField = $('<div>', {
+                                class: 'form-group mb-4'
+                            });
+
+                            let label = $('<label>', {
+                                class: 'label text-secondary',
+                                text: 'Ability Description'
+                            }).append('<span class="text-danger">*</span>');
+
+                            let textarea = $('<textarea>', {
+                                class: 'form-control text-dark ps-5 h-55',
+                                name: 'aspect_description[]',
+                                placeholder: 'Enter aspect description here',
+                                required: true
+                            });
+
+
+                            descriptionField.append(label, textarea);
+
+                            // Append image and description to preview card
+                            previewCard.append(imgElement, deleteButton, descriptionField);
                             previewContainer.append(previewCard);
                         };
                         reader.readAsDataURL(file);
