@@ -62,6 +62,7 @@ Route::middleware(['auth:web', 'role_check'])->prefix('admin')->group(function (
   // Route GodsController
   Route::resource('/gods', GodsController::class)->names('gods');
   Route::post('/gods/status/{id}', [GodsController::class, 'status'])->name('gods.status');
+  Route::delete('/ability/destroy/{id}', [GodsController::class, 'deleteAbility'])->name('ability.destroy');
 });
 
 

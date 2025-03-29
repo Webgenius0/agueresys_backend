@@ -75,18 +75,18 @@ class GodsController extends Controller
     {
         // dd($request->all());
         $validatedData = $request->validate([
-            'title'               => 'required|string|max:255|unique:gods,title',
-            'sub_title'           => 'required|string|max:255',
-            'description_title'   => 'required|string|max:255',
-            'description'         => 'required|string|max:1000',
-        
-            'aspect_description'   => 'required|array|min:1',
+            'title' => 'required|string|max:255|unique:gods,title',
+            'sub_title' => 'required|string|max:255',
+            'description_title' => 'required|string|max:255',
+            'description' => 'required|string|max:1000',
+
+            'aspect_description' => 'required|array|min:1',
             'aspect_description.*' => 'required|string|max:10000',
-        
-            'thumbnail'           => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
-        
-            'aspect_images'       => 'required|array|min:1',
-            'aspect_images.*'     => 'required|image|mimes:jpeg,png,jpg|max:10240',
+
+            'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+
+            'aspect_images' => 'required|array|min:1',
+            'aspect_images.*' => 'required|image|mimes:jpeg,png,jpg|max:10240',
         ]);
         // dd($validatedData);
         try {
@@ -119,7 +119,7 @@ class GodsController extends Controller
                 }
             }
 
-           
+
             $data = Ability::insert($aspectImages);
             // foreach ($aspectImages as $key => $item) {
             //     Ability::Create([
@@ -239,17 +239,22 @@ class GodsController extends Controller
      */
     public function update(Request $request, God $god)
     {
-        dd($request->all());
+        // dd($request->all());
         $validatedData = $request->validate([
             'title' => 'required|string|max:255|unique:gods,title,' . $god->id,
             'sub_title' => 'required|string|max:255',
             'description_title' => 'required|string|max:255',
             'description' => 'required|string|max:1000',
-            'aspect_description' => 'required|string|max:10000',
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
-            'aspect_images.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
 
+            'aspect_description' => 'nullable|array|min:1',
+            'aspect_description.*' => 'required|string|max:10000',
+
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+
+            'aspect_images' => 'nullable|array|min:1',
+            'aspect_images.*' => 'required|image|mimes:jpeg,png,jpg|max:10240',
+        ]);
+        // dd($validatedData);
         try {
             DB::beginTransaction();
 
@@ -270,32 +275,27 @@ class GodsController extends Controller
                 'sub_title' => $validatedData['sub_title'],
                 'description_title' => $validatedData['description_title'],
                 'description' => $validatedData['description'],
-                'aspect_description' => $validatedData['aspect_description'],
+                // 'aspect_description' => $validatedData['aspect_description'],
                 'thumbnail' => $validatedData['thumbnail'],
             ]);
 
             // Handle aspect images update
             if ($request->hasFile('aspect_images')) {
-                // Delete old aspect images if needed
-                // foreach ($god->abilities as $ability) {
-                //     Helper::fileDelete(public_path($ability->ability_thumbnail));
-                //     $ability->delete();
-                // }
-
                 // Upload new images
                 $aspectImages = [];
-                foreach ($request->file('aspect_images') as $key => $image) {
-                    $imagePath = Helper::fileUpload($image, 'aspect_images', $key . '_' . getFileName($image));
-                    $aspectImages[] = $imagePath;
+                if (isset($validatedData['aspect_images'])) {
+                    if ($validatedData['aspect_images']) {
+                        foreach ($validatedData['aspect_images'] as $key => $image) {
+                            $imagePath = Helper::fileUpload($image, 'aspect_images', $key . '_' . getFileName($image));
+                            $aspectImages[] = [
+                                'god_id' => $god->id,
+                                'ability_thumbnail' => $imagePath,
+                                'description' => $validatedData['aspect_description'][$key]
+                            ];
+                        }
+                    }
                 }
-
-                // Recreate abilities with new aspect images
-                foreach ($aspectImages as $image) {
-                    Ability::create([
-                        'god_id' => $god->id,
-                        'ability_thumbnail' => $image,
-                    ]);
-                }
+                $data = Ability::insert($aspectImages);
             }
 
             DB::commit();
@@ -366,6 +366,39 @@ class GodsController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Item status changed successfully.'
+        ]);
+    }
+
+
+    /**
+     * Remove the specified ability from storage.
+     *
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteAbility(string $id)
+    {
+        $data = Ability::findOrFail($id);
+        // dd($data);
+        // delete the god
+        if (!empty($data->thumbnail)) {
+            Helper::fileDelete(public_path($data->thumbnail));
+
+        }
+        $aspects = Ability::where('god_id', $data->id)->get();
+        if (!empty($aspects)) {
+            foreach ($aspects as $aspect) {
+                if (!empty($aspect->ability_thumbnail)) {
+                    Helper::fileDelete(public_path($aspect->ability_thumbnail));
+                }
+            }
+        }
+        // delete the god
+        $data->delete();
+
+        return response()->json([
+            "success" => true,
+            "message" => "Item deleted successfully."
         ]);
     }
 }
