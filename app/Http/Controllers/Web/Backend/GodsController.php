@@ -103,6 +103,7 @@ class GodsController extends Controller
                 'description' => $validatedData['description'],
                 // 'aspect_description' => $validatedData['aspect_description'],
                 'thumbnail' => $validatedData['thumbnail'],
+                'slug' => Helper::makeSlug($validatedData['title'], 'gods'),
             ]);
             // aspect images
             $aspectImages = [];
@@ -118,7 +119,6 @@ class GodsController extends Controller
                     }
                 }
             }
-
 
             $data = Ability::insert($aspectImages);
             // foreach ($aspectImages as $key => $item) {

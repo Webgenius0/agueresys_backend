@@ -15,6 +15,7 @@ class God extends Model
         'description',
         'thumbnail',
         'aspect_description',
+        'slug',
         'status',
     ];
 
@@ -25,6 +26,7 @@ class God extends Model
         'description' => 'string',
         'thumbnail' => 'string',
         'aspect_description' => 'string',
+        'slug' => 'string',
         'status' => 'string',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
