@@ -54,7 +54,7 @@ Route::group(['middleware' => 'check_anonymous_user'], function ($router) {
     // Route::get('/anonymous-users', [AnonymousUserController::class, 'index']);
     // Route::post('/anonymous-users/single/{fingerprint}', [AnonymousUserController::class, 'show']);
     Route::get('/gods', [GodsController::class, 'index']);
-    Route::get('/gods/single/{id}', [GodsController::class, 'show']);
+    Route::get('/gods/single/{godSlug}', [GodsController::class, 'show']);
 
 });
 Route::post('/anonymous-users/store', [AnonymousUserController::class, 'store']);

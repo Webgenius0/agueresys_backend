@@ -53,7 +53,7 @@ class GodsController extends Controller
                 }
             ])
                 ->where('status', 'active')
-                ->select('id', 'title', 'sub_title', 'description_title', 'description', 'aspect_description', 'thumbnail')
+                ->select('id', 'title', 'sub_title', 'description_title', 'description', 'aspect_description', 'thumbnail', 'slug')
                 ->withCount([
                     'godRoles as max_vote_count' => function ($q) use ($roleSearch) {
                         $q->select(DB::raw('COUNT(*)'))
@@ -88,14 +88,15 @@ class GodsController extends Controller
 
 
 
-    public function show(Request $request, $id): JsonResponse
+    public function show(Request $request, $godSlug): JsonResponse
     {
         try {
             DB::beginTransaction();
             $fingerprint = $request->header('Fingerprint');
             $anonymousUser = AnonymousUser::where('fingerprint', $fingerprint)->first();
+            $checkGod = God::where('slug', $godSlug)->firstOrFail();
             // Check if the viewer has already been attached to avoid duplicates
-            $this->godViewer($id, $anonymousUser);
+            $this->godViewer($checkGod->id, $anonymousUser);
 
             $god = God::with([
                 'abilities' => fn($q) => $q->select('id', 'god_id', 'ability_thumbnail', 'description'),
@@ -126,9 +127,10 @@ class GodsController extends Controller
                 }
             ])
                 ->where('status', 'active')
-                ->select('id', 'title', 'sub_title', 'description_title', 'description', 'aspect_description', 'thumbnail')
+                ->select('id', 'title', 'sub_title', 'description_title', 'description', 'aspect_description', 'thumbnail','slug')
                 ->withCount('viewers')
-                ->findOrFail($id);
+                ->where('slug', $godSlug)
+                ->firstOrFail();
 
             // Add is_voted field to each god role
             foreach ($god->godRoles as $role) {
