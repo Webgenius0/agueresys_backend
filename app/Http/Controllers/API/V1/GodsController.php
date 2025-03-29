@@ -98,7 +98,7 @@ class GodsController extends Controller
             $this->godViewer($id, $anonymousUser);
 
             $god = God::with([
-                'abilities' => fn($q) => $q->select('id', 'god_id', 'ability_thumbnail'),
+                'abilities' => fn($q) => $q->select('id', 'god_id', 'ability_thumbnail', 'description'),
                 'godRoles' => function ($q) use ($anonymousUser) {
                     $q->select('id', 'role_id', 'god_id')
                         ->withCount([
