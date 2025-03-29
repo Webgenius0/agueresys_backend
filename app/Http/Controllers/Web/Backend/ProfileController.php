@@ -50,7 +50,7 @@ class ProfileController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:20',
-            'gender' => 'required|in:male,female,other',
+            'gender' => 'nullable|in:male,female,others',
             'avatar' => 'nullable|image|max:2048',
         ]);
         try {

@@ -56,7 +56,7 @@
                                 <div class="form-group position-relative">
                                     <input type="text"
                                         class="form-control text-dark ps-5 h-55 @error('name') is-invalid @enderror"
-                                        name="name" value="{{ old('name', $user->name) }}" required
+                                        name="name" value="{{ old('name', $user->name) }}"
                                         placeholder="Enter Name here">
                                     <i
                                         class="ri-user-line position-absolute top-50 start-0 translate-middle-y fs-20 text-gray-light ps-20"></i>
@@ -71,7 +71,7 @@
                                 <label class="label text-secondary">Email Address</label>
                                 <div class="form-group position-relative">
                                     <input type="email"
-                                        class="form-control text-dark ps-5 h-55 @error('email') is-invalid @enderror" name="email" required placeholder="Email Address"
+                                        class="form-control text-dark ps-5 h-55 @error('email') is-invalid @enderror" name="email" placeholder="Email Address"
                                         value="{{ old('email', $user->email) }}">
                                     <i
                                         class="ri-mail-line position-absolute top-50 start-0 translate-middle-y fs-20 text-gray-light ps-20"></i>
@@ -87,7 +87,7 @@
                                 <div class="form-group position-relative">
                                     <input type="tel"
                                         class="form-control text-dark ps-5 h-55 @error('phone') is-invalid @enderror"
-                                        name="phone" required placeholder="0123122123"
+                                        name="phone" placeholder="0123122123"
                                         value="{{ old('phone', $user->phone) }}">
                                     <i
                                         class="ri-phone-line position-absolute top-50 start-0 translate-middle-y fs-20 text-gray-light ps-20"></i>
@@ -102,7 +102,7 @@
                             <div class="form-group mb-4">
                                 <label class="label text-secondary">Gender</label>
                                 <div class="form-group position-relative">
-                                    <select class="form-select form-control ps-5 h-55 @error('gender') is-invalid @enderror" name="gender" required
+                                    <select class="form-select form-control ps-5 h-55 @error('gender') is-invalid @enderror" name="gender"
                                         aria-label="Default select example">
                                         <option value="" class="text-dark">Select Gender</option>
                                         <option value="male"
@@ -111,7 +111,8 @@
                                         <option value="female"
                                             {{ old('gender', $user->gender ?? '') == 'female' ? 'selected' : '' }}
                                             class="text-dark">Female</option>
-                                        <option {{ old('gender', $user->gender ?? '') == 'other' ? 'selected' : '' }}
+                                        <option value="others"
+                                        {{ old('gender', $user->gender ?? '') == 'others' ? 'selected' : '' }}
                                             class="text-dark">Others</option>
                                     </select>
                                     <i

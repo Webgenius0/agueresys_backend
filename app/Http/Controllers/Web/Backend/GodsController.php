@@ -47,7 +47,7 @@ class GodsController extends Controller
                     <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="View" onclick="window.location.href=\'' . route('gods.show', $data->id) . '\'">
                         <i class="material-symbols-outlined fs-16 text-primary">visibility</i>
                         </button>
-                        
+                        <a type="button" href="' . route('gods.edit', $data->id) . '" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2"><i class="material-symbols-outlined fs-16 text-body">edit</i></a>
                         <button class="ps-0 border-0 bg-transparent lh-1 position-relative top-2" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete" onclick="deleteRecord(event,' . $data->id . ')">
                         <i class="material-symbols-outlined fs-16 text-danger">delete</i>
                         </button>
@@ -59,8 +59,7 @@ class GodsController extends Controller
         }
         return view("backend.layouts.god.index");
     }
-    // <a type="button" href="' . route('gods.edit', $data->id) . '" class="ps-0 border-0 bg-transparent lh-1 position-relative top-2"
-    // ><i class="material-symbols-outlined fs-16 text-body">edit</i></a>
+
     /**
      * Show the form for creating a new data.
      */
@@ -74,49 +73,61 @@ class GodsController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         $validatedData = $request->validate([
-            'title' => 'required|string|max:255|unique:gods,title',
-            'sub_title' => 'required|string|max:255',
-            'description_title' => 'required|string|max:255',
-            'description' => 'required|string|max:1000',
-            'aspect_description' => 'required|string|max:10000',
-            'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
-            'aspect_images.*' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'aspect_images' => 'required',
+            'title'               => 'required|string|max:255|unique:gods,title',
+            'sub_title'           => 'required|string|max:255',
+            'description_title'   => 'required|string|max:255',
+            'description'         => 'required|string|max:1000',
+        
+            'aspect_description'   => 'required|array|min:1',
+            'aspect_description.*' => 'required|string|max:10000',
+        
+            'thumbnail'           => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+        
+            'aspect_images'       => 'required|array|min:1',
+            'aspect_images.*'     => 'required|image|mimes:jpeg,png,jpg|max:10240',
         ]);
-
+        // dd($validatedData);
         try {
             DB::beginTransaction();
             // thumbnail
             if ($request->hasFile('thumbnail')) {
                 $validatedData['thumbnail'] = Helper::fileUpload($request->file('thumbnail'), 'gods', time() . '_' . getFileName($request->file('thumbnail')));
             }
+
+            $god = God::Create([
+                'title' => $validatedData['title'],
+                'sub_title' => $validatedData['sub_title'],
+                'description_title' => $validatedData['description_title'],
+                'description' => $validatedData['description'],
+                // 'aspect_description' => $validatedData['aspect_description'],
+                'thumbnail' => $validatedData['thumbnail'],
+            ]);
             // aspect images
             $aspectImages = [];
             if (isset($validatedData['aspect_images'])) {
                 if ($validatedData['aspect_images']) {
                     foreach ($validatedData['aspect_images'] as $key => $image) {
                         $imagePath = Helper::fileUpload($image, 'aspect_images', $key . '_' . getFileName($image));
-                        $aspectImages[] = $imagePath;
+                        $aspectImages[] = [
+                            'god_id' => $god->id,
+                            'ability_thumbnail' => $imagePath,
+                            'description' => $validatedData['aspect_description'][$key]
+                        ];
                     }
                 }
             }
 
-            // $validatedData['aspect_images'] = json_encode($aspectImages);
-            $god = God::Create([
-                'title' => $validatedData['title'],
-                'sub_title' => $validatedData['sub_title'],
-                'description_title' => $validatedData['description_title'],
-                'description' => $validatedData['description'],
-                'aspect_description' => $validatedData['aspect_description'],
-                'thumbnail' => $validatedData['thumbnail'],
-            ]);
-            foreach ($aspectImages as $key => $image) {
-                Ability::Create([
-                    'god_id' => $god->id,
-                    'ability_thumbnail' => $image,
-                ]);
-            }
+           
+            $data = Ability::insert($aspectImages);
+            // foreach ($aspectImages as $key => $item) {
+            //     Ability::Create([
+            //         'god_id' => $god->id,
+            //         'ability_thumbnail' => $item['ability_thumbnail'],
+            //         'aspect_description' => $item['aspect_description'],
+            //     ]);
+            // }
 
             DB::commit();
             flash()->success('Gods created successfully');
@@ -128,6 +139,62 @@ class GodsController extends Controller
             return redirect()->back()->withInput();
         }
     }
+    // public function store(Request $request)
+    // {
+    //     $validatedData = $request->validate([
+    //         'title' => 'required|string|max:255|unique:gods,title',
+    //         'sub_title' => 'required|string|max:255',
+    //         'description_title' => 'required|string|max:255',
+    //         'description' => 'required|string|max:1000',
+    //         'aspect_description' => 'required|string|max:10000',
+    //         'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+    //         'aspect_images.*' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+    //         'aspect_images' => 'required',
+    //     ]);
+
+    //     try {
+    //         DB::beginTransaction();
+    //         // thumbnail
+    //         if ($request->hasFile('thumbnail')) {
+    //             $validatedData['thumbnail'] = Helper::fileUpload($request->file('thumbnail'), 'gods', time() . '_' . getFileName($request->file('thumbnail')));
+    //         }
+    //         // aspect images
+    //         $aspectImages = [];
+    //         if (isset($validatedData['aspect_images'])) {
+    //             if ($validatedData['aspect_images']) {
+    //                 foreach ($validatedData['aspect_images'] as $key => $image) {
+    //                     $imagePath = Helper::fileUpload($image, 'aspect_images', $key . '_' . getFileName($image));
+    //                     $aspectImages[] = $imagePath;
+    //                 }
+    //             }
+    //         }
+
+    //         // $validatedData['aspect_images'] = json_encode($aspectImages);
+    //         $god = God::Create([
+    //             'title' => $validatedData['title'],
+    //             'sub_title' => $validatedData['sub_title'],
+    //             'description_title' => $validatedData['description_title'],
+    //             'description' => $validatedData['description'],
+    //             'aspect_description' => $validatedData['aspect_description'],
+    //             'thumbnail' => $validatedData['thumbnail'],
+    //         ]);
+    //         foreach ($aspectImages as $key => $image) {
+    //             Ability::Create([
+    //                 'god_id' => $god->id,
+    //                 'ability_thumbnail' => $image,
+    //             ]);
+    //         }
+
+    //         DB::commit();
+    //         flash()->success('Gods created successfully');
+    //         return redirect()->route('gods.index');
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         Log::error("GodsController::store" . $e->getMessage());
+    //         flash()->error('Something went wrong' . $e->getMessage());
+    //         return redirect()->back()->withInput();
+    //     }
+    // }
 
     /**
      * Show the form for editing the specified resource.
@@ -135,7 +202,7 @@ class GodsController extends Controller
     public function edit(string $id)
     {
         try {
-            $data = God::findOrFail($id);
+            $data = God::with('abilities')->findOrFail($id);
             return view("backend.layouts.god.edit", compact("data"));
         } catch (Exception $e) {
             Log::error("GodsController::edit" . $e->getMessage());
@@ -156,8 +223,8 @@ class GodsController extends Controller
                     $query->with('role')->withCount(['upvotes', 'downvotes']);
                 }
             ])
-            ->withCount('viewers')
-            ->findOrFail($id);
+                ->withCount('viewers')
+                ->findOrFail($id);
             // dd($data->toArray());
             return view("backend.layouts.god.show", compact("data"));
         } catch (Exception $e) {
@@ -172,6 +239,7 @@ class GodsController extends Controller
      */
     public function update(Request $request, God $god)
     {
+        dd($request->all());
         $validatedData = $request->validate([
             'title' => 'required|string|max:255|unique:gods,title,' . $god->id,
             'sub_title' => 'required|string|max:255',

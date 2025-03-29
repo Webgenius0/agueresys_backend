@@ -185,11 +185,10 @@ class HomePageController extends Controller
             [
                 'title' => 'required|string|max:255',
                 'sub_title' => 'required|string|max:255',
-                'image' => 'required|file|mimetypes:video/mp4',
+                'image' => 'nullable|file|mimetypes:video/mp4',
             ],
             [
                 'image' => 'The video must be a file of type: mp4.',
-                'image.required' => 'The video is required.',
             ]
         );
 

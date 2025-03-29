@@ -42,42 +42,44 @@ class SystemSettingController extends Controller
     public function update(Request $request)
     {
         // dd($request->all());
-        $validateDta = $request->validate([
+        $validateData = $request->validate([
             'title' => 'required|string|max:100',
             'system_name' => 'required|string|max:50',
-            'email' => 'required|string|email|max:255',
-            'contact_number' => 'required|string|max:20',
+            'email' => 'nullable|string|email|max:255',
+            'contact_number' => 'nullable|string|max:20',
             // 'company_open_hour' => 'required|string|max:255',
-            'copyright_text' => 'required|string|max:255',
+            'copyright_text' => 'nullable|string|max:255',
             'logo' => 'nullable|mimes:jpeg,jpg,png,ico,svg',
             'favicon' => 'nullable|mimes:jpeg,jpg,png,ico,svg',
             // 'address' => 'required|string|max:255',
-            'description' => 'required|string|max:500',
+            'description' => 'nullable|string|max:500',
         ]);
         // dd($validateDta);
-        $setting = SystemSetting::firstOrNew();
-        $setting->title = $request->title;
-        $setting->system_name = $request->system_name;
-        $setting->email = $request->email;
-        $setting->contact_number = $request->contact_number;
-        // $setting->company_open_hour = $request->company_open_hour;
-        $setting->copyright_text = $request->copyright_text;
-        // $setting->address = $request->address;
-        $setting->description = $request->description;
+        $setting = SystemSetting::first();
+        // $setting->title = $request->title;
+        // $setting->system_name = $request->system_name;
+        // $setting->email = $request->email;
+        // $setting->contact_number = $request->contact_number;
+        // // $setting->company_open_hour = $request->company_open_hour;
+        // $setting->copyright_text = $request->copyright_text;
+        // // $setting->address = $request->address;
+        // $setting->description = $request->description;
 
         if ($request->hasFile('logo')) {
             if ($setting->logo) {
                 Helper::fileDelete(public_path($setting->logo));
             }
-            $setting->logo = Helper::fileUpload($request->file('logo'), 'logos', time() . '_' . getFileName($request->file('logo')));
+            $setting['logo'] = Helper::fileUpload($request->file('logo'), 'logos', time() . '_' . getFileName($request->file('logo')));
         }
         if ($request->hasFile('favicon')) {
             if ($setting->favicon) {
                 Helper::fileDelete(public_path($setting->favicon));
             }
-            $setting->favicon = Helper::fileUpload($request->file('favicon'), 'favicons', time() . '_' . getFileName($request->file('favicon')));
+            $setting['favicon'] = Helper::fileUpload($request->file('favicon'), 'favicons', time() . '_' . getFileName($request->file('favicon')));
         }
-        $setting->save();
+        // $setting->save();
+
+        $setting->update($validateData);
 
         flash()->success("System Setting Updated Successfully");
         return back();
