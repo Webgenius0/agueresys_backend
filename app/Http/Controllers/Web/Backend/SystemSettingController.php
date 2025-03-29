@@ -69,13 +69,13 @@ class SystemSettingController extends Controller
             if ($setting->logo) {
                 Helper::fileDelete(public_path($setting->logo));
             }
-            $setting['logo'] = Helper::fileUpload($request->file('logo'), 'logos', time() . '_' . getFileName($request->file('logo')));
+            $validateData['logo'] = Helper::fileUpload($request->file('logo'), 'logos', time() . '_' . getFileName($request->file('logo')));
         }
         if ($request->hasFile('favicon')) {
             if ($setting->favicon) {
                 Helper::fileDelete(public_path($setting->favicon));
             }
-            $setting['favicon'] = Helper::fileUpload($request->file('favicon'), 'favicons', time() . '_' . getFileName($request->file('favicon')));
+            $validateData['favicon'] = Helper::fileUpload($request->file('favicon'), 'favicons', time() . '_' . getFileName($request->file('favicon')));
         }
         // $setting->save();
 
