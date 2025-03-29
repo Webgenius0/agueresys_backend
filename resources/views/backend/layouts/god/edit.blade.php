@@ -19,7 +19,7 @@
                     <p class="fs-15">Edit god and more details here.</p>
                 </div>
 
-                <form action="{{ route('gods.update', $data->id)}}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('gods.update', $data->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="row">
@@ -141,12 +141,13 @@
                             @if (isset($data) && $data->abilities)
                                 @foreach (json_decode($data->abilities) as $image)
                                     <div class="preview-item">
-                                        <div class="position-relative rounded overflow-hidden shadow-sm m-2">
+                                        <div class="position-relative rounded overflow-hidden shadow-sm m-2"
+                                            id="ability-{{ $image->id }}">
                                             <img src="{{ asset($image->ability_thumbnail) }}" alt=""
                                                 class=" img-thumbnail rounded" style="height: 200px; width: 200px">
-                                                <textarea class="form-control text-dark" style="height: 100px" disabled>{{ $image->description }}</textarea>
-                                            <button
-                                                class="position-absolute top-0 end-0 btn-sm btn-danger rounded-circle">&times;</button>
+                                            <textarea class="form-control text-dark" style="height: 100px" disabled>{{ $image->description ?? '' }}</textarea>
+                                            <button class="position-absolute top-0 end-0 btn-sm btn-danger rounded-circle"
+                                                onclick="event.preventDefault(); deleteAbility({{ $image->id }})">&times;</button>
                                         </div>
                                     </div>
                                 @endforeach
@@ -310,5 +311,39 @@
                 // console.log(galleryImagesInput.files);
             }
         });
+    </script>
+
+    <script>
+        function deleteAbility(id) {
+            Swal.fire({
+                title: 'Are you sure you want to delete this record?',
+                text: 'If you delete this, it will be gone forever.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{{ route('ability.destroy', ':id') }}".replace(':id', id),
+                        method: "POST", // Laravel requires POST for CSRF validation
+                        data: {
+                            _method: "DELETE", // Spoof DELETE method
+                            _token: "{{ csrf_token() }}" // Include CSRF token
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                $("#ability-" + id).remove();
+                            }
+                            flasher.success(response.message);
+                        },
+                        error: function(xhr) {
+                            flasher.error("Error deleting ability: " + xhr.responseText);
+                        }
+                    });
+                }
+            });
+        }
     </script>
 @endpush
