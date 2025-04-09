@@ -87,7 +87,20 @@ class GodsController extends Controller
     }
 
 
-
+    /**
+     * Display the details of a specific god along with associated data.
+     *
+     * Retrieves a god by its slug and loads related abilities and roles.
+     * For each role, it includes vote counts (upvotes/downvotes) and whether
+     * the current anonymous user has voted. Also registers the viewer if not already recorded.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $godSlug  The slug of the god to display
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If the god is not found
+     * @throws \Exception On database or processing error
+     */
     public function show(Request $request, $godSlug): JsonResponse
     {
         try {
@@ -127,7 +140,7 @@ class GodsController extends Controller
                 }
             ])
                 ->where('status', 'active')
-                ->select('id', 'title', 'sub_title', 'description_title', 'description', 'aspect_description', 'thumbnail','slug')
+                ->select('id', 'title', 'sub_title', 'description_title', 'description', 'aspect_description', 'thumbnail', 'slug')
                 ->withCount('viewers')
                 ->where('slug', $godSlug)
                 ->firstOrFail();
@@ -147,6 +160,14 @@ class GodsController extends Controller
         }
     }
 
+    /**
+     * Check if the user has viewed the god and if not
+     * create a new GodView record.
+     *
+     * @param int $godId
+     * @param \App\Models\AnonymousUser $anonymousUser
+     * @return void
+     */
     private function godViewer($godId, $anonymousUser)
     {
         $GodViewer = GodView::where('god_id', $godId)->where('anonymous_user_id', $anonymousUser->id)->first();

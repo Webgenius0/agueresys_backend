@@ -11,6 +11,7 @@ use App\Models\GodRole;
 use App\Models\GodsCounter;
 use App\Models\Vote;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Log;
@@ -18,50 +19,75 @@ use Log;
 class GodsCounterController extends Controller
 {
 
-    public function getGodsCounters(Request $request, string $godSlug)
+/**
+ * Retrieve a paginated list of gods that counter a given god, sorted by upvotes.
+ *
+ * This method fetches all gods except the one identified by the provided slug.
+ * For each god, it loads related counters (votes from the given god),
+ * counts upvotes and downvotes from the original god,
+ * and attaches whether the current anonymous user has voted on each.
+ *
+ * @param  \Illuminate\Http\Request  $request
+ * @param  string  $godSlug  The slug of the god for which counters are being retrieved
+ * @return \Illuminate\Http\JsonResponse
+ *
+ * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If the godSlug is invalid
+ */
+    public function getGodsCounters(Request $request, string $godSlug): JsonResponse
     {
         try {
-            $per_page = $request->has('per_page') ? $request->per_page : 25;
+            $per_page = $request->get('per_page', 25);
             $fingerprint = $request->header('Fingerprint');
             $anonymousUser = AnonymousUser::where('fingerprint', $fingerprint)->first();
-            // dd($godSlug);
-            $god = God::where('slug', $godSlug)->first();
-            // dd($god);
-            $gods = God::withCount([
-                'counters as upvotes_count' => function ($query) use ($god) {
-                    $query->where('god_id', $god->id)->where('counter_god_id', '!=', $god->id)->where('vote', 'up');
-                },
-                'counters as downvotes_count' => function ($query) use ($god) {
-                    $query->where('god_id', $god->id)->where('counter_god_id', '!=', $god->id)->where('vote', 'down');
+            $god = God::where('slug', $godSlug)->firstOrFail();
+            // Get all gods
+            $query = God::with([
+                'counters' => function ($q) use ($god) {
+                    $q->where('god_id', $god->id);
                 }
             ])
+                ->withCount([
+                    'counters as upvotes_count' => function ($query) use ($god) {
+                        $query->where('god_id', $god->id)
+                            ->where('counter_god_id', '!=', $god->id)
+                            ->where('vote', 'up');
+                    },
+                    'counters as downvotes_count' => function ($query) use ($god) {
+                        $query->where('god_id', $god->id)
+                            ->where('counter_god_id', '!=', $god->id)
+                            ->where('vote', 'down');
+                    }
+                ])
                 ->where('status', 'active')
                 ->where('id', '!=', $god->id)
-                ->get()
-                ->map(function ($gods) use ($anonymousUser, $god) {
-                    // Check if the current user has voted for this god
-                    $userVote = $gods->counters->where('anonymous_user_id', $anonymousUser->id)->where('god_id', $god->id)->first();
-                    // Add is_vote and vote_value to each god
-                    $gods->is_vote = $userVote ? true : false;
-                    $gods->vote_value = $userVote ? $userVote->vote : null;
-                    // Hide attribute from the response
-                    $gods->makeHidden(['counters', 'created_at', 'updated_at', 'aspect_description', 'sub_title', 'description_title', 'description', 'status']);
-                    return $gods;
-                })
-                ->sortByDesc('upvotes_count')  // Order the collection by upvotes_count
-                ->values();  // Re-index the collection to reset the keys
+                ->orderByDesc('upvotes_count'); 
 
-            return Helper::jsonResponse(true, 'Gods retrieved successfully.', 200, $gods);
+            $paginatedGods = $query->paginate($per_page);
+            // Add is_voted field to each god
+            $paginatedGods->getCollection()->transform(function ($gods) use ($anonymousUser, $god) {
+                $userVote = $gods->counters->where('anonymous_user_id', optional($anonymousUser)->id)->where('god_id', $god->id)->first();
+                $gods->is_vote = $userVote ? true : false;
+                $gods->vote_value = $userVote ? $userVote->vote : null;
+                $gods->makeHidden(['counters', 'created_at', 'updated_at', 'aspect_description', 'sub_title', 'description_title', 'description', 'status']);
+                return $gods;
+            });
+
+            return Helper::jsonResponse(true, 'Gods retrieved successfully.', 200, $paginatedGods, true);
         } catch (Exception $e) {
             Log::error("GodsController::index: " . $e->getMessage());
             return Helper::jsonErrorResponse('Failed to retrieve Gods', 403);
         }
     }
 
-
-
-
-    public function store(Request $request)
+    /**
+     * Store a new counter vote.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If the godSlug is invalid
+     */
+    public function store(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
             // 'anonymous_user_id' => 'required|exists:anonymous_users,id',
@@ -133,14 +159,6 @@ class GodsCounterController extends Controller
             Log::error("GodsCounterController::store" . $e->getMessage());
             return Helper::jsonErrorResponse('Failed to record vote' . $e->getMessage(), 500);
         }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
     }
 
 }

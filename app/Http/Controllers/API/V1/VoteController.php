@@ -8,6 +8,7 @@ use App\Models\AnonymousUser;
 use App\Models\GodRole;
 use App\Models\Vote;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -15,10 +16,18 @@ use Illuminate\Support\Facades\Log;
 class VoteController extends Controller
 {
 
+
     /**
-     * Store a newly created resource in storage.
+     * Store a new vote in the database.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If the godRole is invalid
+     * @throws \Illuminate\Validation\ValidationException If the request is invalid
+     * @throws \Exception If the vote cannot be stored
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
             // 'anonymous_user_id' => 'required|exists:anonymous_users,id',
