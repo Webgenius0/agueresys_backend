@@ -61,6 +61,13 @@ class God extends Model
     {
         return $this->hasMany(GodView::class);
     }
+
+
+     public function counters()
+     {
+         return $this->hasMany(GodsCounter::class, 'counter_god_id');
+     }
+ 
     public function getThumbnailAttribute($value): string|null
     {
         if (filter_var($value, FILTER_VALIDATE_URL)) {
