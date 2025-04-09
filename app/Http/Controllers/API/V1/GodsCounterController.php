@@ -29,10 +29,10 @@ class GodsCounterController extends Controller
             // dd($god);
             $gods = God::withCount([
                 'counters as upvotes_count' => function ($query) use ($god) {
-                    $query->where('god_id', $god->id)->where('counter_god_id', '!=', $god->id )->where('vote', 'up');
+                    $query->where('god_id', $god->id)->where('counter_god_id', '!=', $god->id)->where('vote', 'up');
                 },
                 'counters as downvotes_count' => function ($query) use ($god) {
-                    $query->where('god_id', $god->id)->where('counter_god_id', '!=', $god->id )->where('vote', 'down');
+                    $query->where('god_id', $god->id)->where('counter_god_id', '!=', $god->id)->where('vote', 'down');
                 }
             ])
                 ->where('status', 'active')
@@ -44,13 +44,13 @@ class GodsCounterController extends Controller
                     // Add is_vote and vote_value to each god
                     $gods->is_vote = $userVote ? true : false;
                     $gods->vote_value = $userVote ? $userVote->vote : null;
-                    // Hide the 'counters' attribute from the response
-                    $gods->makeHidden('counters');
+                    // Hide attribute from the response
+                    $gods->makeHidden(['counters', 'created_at', 'updated_at', 'aspect_description', 'sub_title', 'description_title', 'description', 'status']);
                     return $gods;
                 })
                 ->sortByDesc('upvotes_count')  // Order the collection by upvotes_count
                 ->values();  // Re-index the collection to reset the keys
-                
+
             return Helper::jsonResponse(true, 'Gods retrieved successfully.', 200, $gods);
         } catch (Exception $e) {
             Log::error("GodsController::index: " . $e->getMessage());
