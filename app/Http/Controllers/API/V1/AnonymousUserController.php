@@ -6,16 +6,21 @@ use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\AnonymousUser;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use function Laravel\Prompts\select;
 
 class AnonymousUserController extends Controller
 {
+
     /**
-     * Display a listing of the resource.
+     * Get all anonymous users.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         try {
             $per_page = $request->has('per_page') ? $request->per_page : 25;
@@ -27,10 +32,14 @@ class AnonymousUserController extends Controller
         }
     }
 
+
     /**
-     * Store a newly created resource in storage.
+     * Create a new anonymous user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
             'ip_address' => 'nullable|ip',
@@ -46,10 +55,14 @@ class AnonymousUserController extends Controller
         }
     }
 
+
     /**
      * Display the specified resource.
+     *
+     * @param string $fingerprint The fingerprint of the user to retrieve
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function show($fingerprint)
+    public function show($fingerprint): JsonResponse
     {
         try {
             $anonymousUser = AnonymousUser::where('fingerprint', $fingerprint)->firstOrFail();
@@ -60,10 +73,15 @@ class AnonymousUserController extends Controller
         }
     }
 
+
     /**
      * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $id
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): JsonResponse
     {
         $validatedData = $request->validate([
             'ip_address' => 'nullable|ip|unique:anonymous_users,ip_address,' . $id,
@@ -78,10 +96,14 @@ class AnonymousUserController extends Controller
         }
     }
 
+
     /**
      * Remove the specified resource from storage.
+     *
+     * @param  string  $id The fingerprint of the user to delete
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy($id)
+    public function destroy($id): JsonResponse
     {
         try {
             $anonymousUser = AnonymousUser::findOrFail($id);
