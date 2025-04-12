@@ -78,7 +78,7 @@ class GodsController extends Controller
                 }
                 return $god;
             });
-
+            // dd($gods->toArray());
             return Helper::jsonResponse(true, 'Gods retrieved successfully.', 200, GodsResource::collection($gods), true);
         } catch (Exception $e) {
             Log::error("GodsController::index: " . $e->getMessage());
