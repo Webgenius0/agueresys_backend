@@ -23,7 +23,8 @@ class GodsResource extends JsonResource
             'description' => $this->description,
             'aspect_description' => $this->aspect_description,
             'thumbnail' => $this->thumbnail,
-            'max_vote_count' => $this->max_vote_count
+            'max_vote_count' => $this->max_vote_count,
+            'god_roles' => GodRoleResource::collection($this->whenLoaded('godRoles')),
         ];
     }
 }
