@@ -61,6 +61,7 @@ Route::group(['middleware' => 'check_anonymous_user'], function ($router) {
 Route::post('/anonymous-users/store', [AnonymousUserController::class, 'store']);
 // Route vote
 Route::post('/anonymous-users/vote', [VoteController::class, 'store']);
+Route::post('/anonymous-users/individual/vote', [VoteController::class, 'individualVoteStore']);
 Route::post('/anonymous-users/counter-picks/vote', [GodsCounterController::class, 'store']);
 Route::get('/roles', [RoleController::class, 'index']);
 Route::get('/roles/single/{id}', [RoleController::class, 'show']);

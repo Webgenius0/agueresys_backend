@@ -6,6 +6,7 @@ use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\AnonymousUser;
 use App\Models\GodRole;
+use App\Models\IndividualVote;
 use App\Models\Vote;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -103,7 +104,7 @@ class VoteController extends Controller
         }
     }
 
-    public function SingleGodRoleStore(Request $request): JsonResponse
+    public function individualVoteStore(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
             // 'anonymous_user_id' => 'required|exists:anonymous_users,id',
@@ -136,7 +137,7 @@ class VoteController extends Controller
             $godRole = GodRole::findOrFail($request->god_role_id);
             $godId = $godRole->god_id;
             //if exits vote
-            $vote = Vote::where('anonymous_user_id', $anonymousUserId)->where('god_role_id', $request->god_role_id)->first();
+            $vote = IndividualVote::where('anonymous_user_id', $anonymousUserId)->where('god_role_id', $request->god_role_id)->first();
             if ($vote) {
                 // dd($vote->toArray());
                 if ($vote->vote === $validatedData['vote']) {
@@ -145,7 +146,6 @@ class VoteController extends Controller
                     DB::commit();
                     return Helper::jsonErrorResponse('Your vote has been changed and deleted', 200);
                 } else {
-                    // dd('change vote');
                     $vote->update(['vote' => $validatedData['vote']]);
                     // Log::info('Vote updated successfully' . $vote);
                     DB::commit();
@@ -153,7 +153,7 @@ class VoteController extends Controller
                 }
             } else {
                 // Count how many roles this user already voted for this god
-                $voteCount = Vote::whereHas('godRole', function ($query) use ($godId) {
+                $voteCount = IndividualVote::whereHas('godRole', function ($query) use ($godId) {
                     $query->where('god_id', $godId);
                 })->where('anonymous_user_id', $anonymousUserId)->count();
 
@@ -162,7 +162,7 @@ class VoteController extends Controller
                 }
 
                 // Store the vote
-                Vote::create([
+                IndividualVote::create([
                     'anonymous_user_id' => $anonymousUserId,
                     'god_role_id' => $request->god_role_id,
                     'vote' => $validatedData['vote']
@@ -174,7 +174,7 @@ class VoteController extends Controller
             return Helper::jsonResponse(true, 'Vote successfully recorded', 200);
         } catch (Exception $e) {
             DB::rollBack();
-            Log::error("VoteController::store" . $e->getMessage());
+            Log::error("VoteController::individualVoteStore" . $e->getMessage());
             return Helper::jsonErrorResponse('Failed to record vote' . $e->getMessage(), 500);
         }
     }
