@@ -35,6 +35,7 @@ class GodRole extends Model
     {
         return $this->belongsTo(Role::class);
     }
+    // here i store main page votes
     public function votes()
     {
         return $this->hasMany(Vote::class);

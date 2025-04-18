@@ -19,20 +19,20 @@ use Log;
 class GodsCounterController extends Controller
 {
 
-/**
- * Retrieve a paginated list of gods that counter a given god, sorted by upvotes.
- *
- * This method fetches all gods except the one identified by the provided slug.
- * For each god, it loads related counters (votes from the given god),
- * counts upvotes and downvotes from the original god,
- * and attaches whether the current anonymous user has voted on each.
- *
- * @param  \Illuminate\Http\Request  $request
- * @param  string  $godSlug  The slug of the god for which counters are being retrieved
- * @return \Illuminate\Http\JsonResponse
- *
- * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If the godSlug is invalid
- */
+    /**
+     * Retrieve a paginated list of gods that counter a given god, sorted by upvotes.
+     *
+     * This method fetches all gods except the one identified by the provided slug.
+     * For each god, it loads related counters (votes from the given god),
+     * counts upvotes and downvotes from the original god,
+     * and attaches whether the current anonymous user has voted on each.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $godSlug  The slug of the god for which counters are being retrieved
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If the godSlug is invalid
+     */
     public function getGodsCounters(Request $request, string $godSlug): JsonResponse
     {
         try {
@@ -40,7 +40,7 @@ class GodsCounterController extends Controller
             $fingerprint = $request->header('Fingerprint');
             $anonymousUser = AnonymousUser::where('fingerprint', $fingerprint)->first();
             $god = God::where('slug', $godSlug)->firstOrFail();
-            // Get all gods
+
             $query = God::with([
                 'counters' => function ($q) use ($god) {
                     $q->where('god_id', $god->id);
@@ -59,25 +59,39 @@ class GodsCounterController extends Controller
                     }
                 ])
                 ->where('status', 'active')
-                ->where('id', '!=', $god->id)
-                ->orderByDesc('upvotes_count'); 
+                ->where('id', '!=', $god->id);
 
-            $paginatedGods = $query->paginate($per_page);
-            // Add is_voted field to each god
-            $paginatedGods->getCollection()->transform(function ($gods) use ($anonymousUser, $god) {
+            $paginatedGods = $query->get();
+
+            // Add is_vote, vote_value, and net_votes
+            $transformed = $paginatedGods->map(function ($gods) use ($anonymousUser, $god) {
                 $userVote = $gods->counters->where('anonymous_user_id', optional($anonymousUser)->id)->where('god_id', $god->id)->first();
                 $gods->is_vote = $userVote ? true : false;
                 $gods->vote_value = $userVote ? $userVote->vote : null;
+                $gods->net_votes = $gods->upvotes_count - $gods->downvotes_count;
                 $gods->makeHidden(['counters', 'created_at', 'updated_at', 'aspect_description', 'sub_title', 'description_title', 'description', 'status']);
                 return $gods;
             });
 
-            return Helper::jsonResponse(true, 'Gods retrieved successfully.', 200, $paginatedGods, true);
+            // Sort by net_votes descending
+            $sorted = $transformed->sortByDesc('net_votes')->values();
+
+            // Paginate manually since we used `get()` earlier
+            $page = $request->get('page', 1);
+            $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+                $sorted->forPage($page, $per_page),
+                $sorted->count(),
+                $per_page,
+                $page
+            );
+
+            return Helper::jsonResponse(true, 'Gods retrieved successfully.', 200, $paginated, true);
         } catch (Exception $e) {
             Log::error("GodsController::index: " . $e->getMessage());
-            return Helper::jsonErrorResponse('Failed to retrieve Gods', 403);
+            return Helper::jsonErrorResponse('Failed to retrieve Gods. ' . $e->getMessage(), 403);
         }
     }
+
 
     /**
      * Store a new counter vote.
