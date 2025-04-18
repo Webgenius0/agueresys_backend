@@ -31,6 +31,7 @@ class GodRole extends Model
         return $this->belongsTo(God::class);
     }
 
+
     public function role()
     {
         return $this->belongsTo(Role::class);

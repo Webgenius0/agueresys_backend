@@ -59,6 +59,7 @@ class VoteController extends Controller
 
             $anonymousUserId = $anonymousUser->id;
             $godRole = GodRole::findOrFail($request->god_role_id);
+            $roleId = $godRole->role_id;
             $godId = $godRole->god_id;
             //if exits vote
             $vote = Vote::where('anonymous_user_id', $anonymousUserId)->where('god_role_id', $request->god_role_id)->first();
@@ -77,13 +78,15 @@ class VoteController extends Controller
                     return Helper::jsonResponse(true, 'Vote successfully recorded', 200);
                 }
             } else {
-                // Count how many roles this user already voted for this god
-                $voteCount = Vote::whereHas('godRole', function ($query) use ($godId) {
-                    $query->where('god_id', $godId);
-                })->where('anonymous_user_id', $anonymousUserId)->count();
-
-                if ($voteCount >= 2) {
-                    return Helper::jsonErrorResponse('You can only vote for 2 roles per god', 403);
+                // Count user's votes for this role
+                $voteCount = Vote::where('anonymous_user_id', $anonymousUserId)
+                    ->whereHas('godRole', function ($query) use ($roleId) {
+                        $query->where('role_id', $roleId);
+                    })
+                    ->count();
+                Log::info('Vote count god role_id: ' . $request->god_role_id . ' and role_id: ' . $roleId . ' and vote_count: ' . $voteCount);
+                if ($voteCount >= 3) {
+                    return Helper::jsonErrorResponse('You can only vote for 3 gods per role', 403);
                 }
 
                 // Store the vote
