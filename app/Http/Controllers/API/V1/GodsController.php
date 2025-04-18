@@ -54,13 +54,18 @@ class GodsController extends Controller
             ])
                 ->where('status', 'active')
                 ->select('id', 'title', 'sub_title', 'description_title', 'description', 'aspect_description', 'thumbnail', 'slug')
-                ->withCount([
-                    'godRoles as max_vote_count' => function ($q) use ($roleSearch) {
-                        $q->select(DB::raw('COUNT(*)'))
-                            ->join('votes', 'votes.god_role_id', '=', 'god_roles.id')
-                            ->when($roleSearch, function ($query) use ($roleSearch) {
-                                $query->where('god_roles.role_id', $roleSearch);
-                            });
+                ->addSelect(['max_vote_count' => function ($q) use ($roleSearch) {
+                    $q->select(DB::raw('COALESCE(MAX(vote_score), 0)'))
+                            ->fromSub(function ($sub) use ($roleSearch) {
+                                $sub->from('god_roles')
+                                    ->selectRaw('god_roles.god_id, SUM(CASE votes.vote WHEN "up" THEN 1 WHEN "down" THEN -1 ELSE 0 END) as vote_score')
+                                    ->join('votes', 'votes.god_role_id', '=', 'god_roles.id')
+                                    ->when($roleSearch, function ($query) use ($roleSearch) {
+                                        $query->where('god_roles.role_id', $roleSearch);
+                                    })
+                                    ->groupBy('god_roles.id', 'god_roles.god_id');
+                            }, 'vote_scores')
+                            ->whereColumn('vote_scores.god_id', 'gods.id');
                     }
                 ])
                 ->when($titleSearch, function ($query) use ($titleSearch) {
@@ -78,7 +83,7 @@ class GodsController extends Controller
                 }
                 return $god;
             });
-            // dd($gods->toArray());
+            // return Helper::jsonResponse(true, 'Gods retrieved successfully.', 200, $gods, true);
             return Helper::jsonResponse(true, 'Gods retrieved successfully.', 200, GodsResource::collection($gods), true);
         } catch (Exception $e) {
             Log::error("GodsController::index: " . $e->getMessage());
