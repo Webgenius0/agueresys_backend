@@ -78,10 +78,10 @@ class GodsController extends Controller
             'title' => 'required|string|max:255|unique:gods,title',
             'sub_title' => 'required|string|max:255',
             'description_title' => 'required|string|max:255',
-            'description' => 'required|string|max:1000',
+            'description' => 'required|string',
 
             'aspect_description' => 'required|array|min:1',
-            'aspect_description.*' => 'required|string|max:10000',
+            'aspect_description.*' => 'required|string',
 
             'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
 
@@ -244,10 +244,10 @@ class GodsController extends Controller
             'title' => 'required|string|max:255|unique:gods,title,' . $god->id,
             'sub_title' => 'required|string|max:255',
             'description_title' => 'required|string|max:255',
-            'description' => 'required|string|max:1000',
+            'description' => 'required|string',
 
             'aspect_description' => 'nullable|array|min:1',
-            'aspect_description.*' => 'required|string|max:10000',
+            'aspect_description.*' => 'required|string',
 
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
 
