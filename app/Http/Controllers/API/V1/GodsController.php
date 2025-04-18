@@ -54,8 +54,9 @@ class GodsController extends Controller
             ])
                 ->where('status', 'active')
                 ->select('id', 'title', 'sub_title', 'description_title', 'description', 'aspect_description', 'thumbnail', 'slug')
-                ->addSelect(['max_vote_count' => function ($q) use ($roleSearch) {
-                    $q->select(DB::raw('COALESCE(MAX(vote_score), 0)'))
+                ->addSelect([
+                    'max_vote_count' => function ($q) use ($roleSearch) {
+                        $q->select(DB::raw('COALESCE(MAX(vote_score), 0)'))
                             ->fromSub(function ($sub) use ($roleSearch) {
                                 $sub->from('god_roles')
                                     ->selectRaw('god_roles.god_id, SUM(CASE votes.vote WHEN "up" THEN 1 WHEN "down" THEN -1 ELSE 0 END) as vote_score')
@@ -121,17 +122,16 @@ class GodsController extends Controller
                 'godRoles' => function ($q) use ($anonymousUser) {
                     $q->select('id', 'role_id', 'god_id')
                         ->withCount([
-                            'votes as vote_count',
-                            'votes as upvotes' => function ($query) {
+                            'individualVotes as vote_count',
+                            'individualVotes as upvotes' => function ($query) {
                                 $query->where('vote', 'up');
                             },
-                            'votes as downvotes' => function ($query) {
+                            'individualVotes as downvotes' => function ($query) {
                                 $query->where('vote', 'down');
                             },
                         ])
-                        ->orderByDesc('vote_count')
                         ->with([
-                            'votes' => function ($q) use ($anonymousUser) {
+                            'individualVotes' => function ($q) use ($anonymousUser) {
                                 $q->select('id', 'vote', 'god_role_id', 'anonymous_user_id');
                                 if ($anonymousUser) {
                                     $q->where('anonymous_user_id', $anonymousUser->id);
@@ -141,7 +141,8 @@ class GodsController extends Controller
                                 $q->select('id', 'name');
                             }
 
-                        ]);
+                        ])
+                        ->orderByRaw('(upvotes - downvotes) DESC');
                 }
             ])
                 ->where('status', 'active')
@@ -152,7 +153,7 @@ class GodsController extends Controller
 
             // Add is_voted field to each god role
             foreach ($god->godRoles as $role) {
-                $vote = $role->votes->first();
+                $vote = $role->individualVotes->first();
                 $role->is_voted = $vote ? true : false;
                 $role->vote_value = $vote ? $vote->vote : null; // Upvote (1) or Downvote (-1)
             }
