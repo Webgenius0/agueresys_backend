@@ -26,7 +26,6 @@ Route::middleware(['auth:web', 'role_check'])->prefix('admin')->group(function (
   // Routes for managing guests
   Route::get('/', function () {
     return view('backend.layouts.dashboard.index');
-    // return view('backend.layouts.dashboard.index');
   })->name('admin.dashboard');
 
   Route::get('settings-profile', [ProfileController::class, 'index'])->name('profile_settings.index');
@@ -40,10 +39,6 @@ Route::middleware(['auth:web', 'role_check'])->prefix('admin')->group(function (
   // Route for updating system settings
   Route::post('system-settings-update', [SystemSettingController::class, 'update'])->name('system_settings.update');
 
-  // // Mail Settings index
-  // Route::get('system-settings-mail', [SystemSettingController::class, 'mailSettingGet'])->name('system_settings.mail_get');
-  // // Mail Settings routes
-  // Route::post('system-settings-mail', [SystemSettingController::class, 'mailSettingUpdate'])->name('system_settings.mail');
 
   // Routes for DynamicPageController
   Route::resource('/dynamic-page', DynamicPageController::class)->names('dynamic_page');
