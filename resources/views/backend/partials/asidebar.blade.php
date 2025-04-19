@@ -36,7 +36,7 @@ $systemSetting = App\Models\SystemSetting::first();
             <!-- gods Menu Item -->
             <li class="menu-item {{ request()->routeIs('gods.*') ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle active">
-                    <span class="material-symbols-outlined menu-icon">group_add</span>
+                    <span class="material-symbols-outlined menu-icon">cyclone</span>
                     <span class="title">Gods</span>
                 </a>
                 <ul class="menu-sub">
@@ -55,14 +55,30 @@ $systemSetting = App\Models\SystemSetting::first();
             <!-- Vote Menu Item -->
             <li class="menu-item {{ request()->routeIs('vote*') ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle active">
-                    <span class="material-symbols-outlined menu-icon">group_add</span>
-                    <span class="title">Vote Menu</span>
+                    <span class="material-symbols-outlined menu-icon">how_to_vote</span>
+                    <span class="title">Vote</span>
                 </a>
                 <ul class="menu-sub">
                     <li class="menu-item">
                         <a href="{{ route('vote.index') }}"
                             class="menu-link {{ request()->routeIs('vote.index') ? 'active' : '' }}">
                             Reset Votes
+                        </a>
+                    </li>
+
+                </ul>
+            </li>
+            <!-- Role Menu Item -->
+            <li class="menu-item {{ request()->routeIs('vote*') ? 'open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle active">
+                    <span class="material-symbols-outlined menu-icon">add_moderator</span>
+                    <span class="title">Role</span>
+                </a>
+                <ul class="menu-sub">
+                    <li class="menu-item">
+                        <a href="{{ route('vote.index') }}"
+                            class="menu-link {{ request()->routeIs('vote.index') ? 'active' : '' }}">
+                            View Role Data
                         </a>
                     </li>
 
@@ -140,7 +156,7 @@ $systemSetting = App\Models\SystemSetting::first();
             <!-- CMS Menu Item -->
             <li class="menu-item {{ request()->routeIs('cms.home_page.*') ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle active">
-                    <span class="material-symbols-outlined menu-icon">handshake</span>
+                    <span class="material-symbols-outlined menu-icon">house</span>
                     <span class="title">Home Page</span>
                 </a>
                 <ul class="menu-sub">
