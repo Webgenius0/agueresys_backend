@@ -52,6 +52,22 @@ $systemSetting = App\Models\SystemSetting::first();
 
                 </ul>
             </li>
+            <!-- Vote Menu Item -->
+            <li class="menu-item {{ request()->routeIs('vote*') ? 'open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle active">
+                    <span class="material-symbols-outlined menu-icon">group_add</span>
+                    <span class="title">Vote Menu</span>
+                </a>
+                <ul class="menu-sub">
+                    <li class="menu-item">
+                        <a href="{{ route('vote.index') }}"
+                            class="menu-link {{ request()->routeIs('vote.index') ? 'active' : '' }}">
+                            Reset Votes
+                        </a>
+                    </li>
+
+                </ul>
+            </li>
 
 
             <li class="menu-title small text-uppercase">
