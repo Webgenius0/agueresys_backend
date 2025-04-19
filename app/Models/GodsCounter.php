@@ -43,4 +43,16 @@ class GodsCounter extends Model
     {
         return $this->belongsTo(AnonymousUser::class);
     }
+
+    public static function getVotesGroupedByCounter($godId)
+{
+    return self::select('counter_god_id')
+        ->selectRaw("SUM(CASE WHEN vote = 'up' THEN 1 ELSE 0 END) as upvotes")
+        ->selectRaw("SUM(CASE WHEN vote = 'down' THEN 1 ELSE 0 END) as downvotes")
+        ->where('god_id', $godId)
+        ->groupBy('counter_god_id')
+        ->orderByRaw("SUM(CASE WHEN vote = 'up' THEN 1 ELSE 0 END) - SUM(CASE WHEN vote = 'down' THEN 1 ELSE 0 END) DESC")
+        ->with('counterGod:id,title,thumbnail')
+        ->get();
+}
 }

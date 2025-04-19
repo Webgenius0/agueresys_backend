@@ -58,4 +58,15 @@ class GodRole extends Model
     {
         return $this->votes()->where('vote', 'down');
     }
+    // Count the upvotes for the GodRole
+    public function upvotesIndividual()
+    {
+        return $this->individualVotes()->where('vote', 'up');
+    }
+
+    // Count the downvotes for the GodRole
+    public function downvotesIndividual()
+    {
+        return $this->individualVotes()->where('vote', 'down');
+    }
 }

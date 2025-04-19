@@ -8,6 +8,7 @@ use App\Models\Ability;
 use App\Models\Category;
 use App\Models\God;
 use App\Models\GodRole;
+use App\Models\GodsCounter;
 use DB;
 use Exception;
 use Illuminate\Http\Request;
@@ -220,13 +221,18 @@ class GodsController extends Controller
             $data = God::with([
                 'abilities',
                 'godRoles' => function ($query) {
-                    $query->with('role')->withCount(['upvotes', 'downvotes']);
-                }
+                    $query->with(['role'])->withCount([
+                        'upvotesIndividual as upvotes',
+                        'downvotesIndividual as downvotes'
+                    ])
+                        ->orderByRaw('(COALESCE(upvotes, 0) - COALESCE(downvotes, 0)) DESC');
+                },
             ])
                 ->withCount('viewers')
                 ->findOrFail($id);
-            // dd($data->toArray());
-            return view("backend.layouts.god.show", compact("data"));
+                $counterVotes  = GodsCounter::getVotesGroupedByCounter($id);
+            // dd($counterVotes->toArray());
+            return view("backend.layouts.god.show", compact("data", "counterVotes"));
         } catch (Exception $e) {
             Log::error("GodsController::show" . $e->getMessage());
             flash()->error('Something went wrong' . $e->getMessage());
