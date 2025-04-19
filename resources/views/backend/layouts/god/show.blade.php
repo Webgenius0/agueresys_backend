@@ -91,10 +91,11 @@
                 {{-- Display Roles --}}
                 @if ($data->godRoles->count() > 0)
                     <div class="mt-4">
-                        {{-- <h5 class="text-primary fw-bold">
-            <i class="fas fa-user-shield me-2"></i> Roles
-        </h5> --}}
+                        <h5 class="text-primary fw-bold">
+                            <i class="fas fa-user-shield me-2"></i> BEST ROLE FOR A SPECIFIC GOD
+                        </h5>
                         <div class="table-responsive">
+                            {{-- <h1>BEST ROLE FOR A SPECIFIC GOD</h1> --}}
                             <table
                                 class="table table-bordered table-striped table-hover text-center align-middle shadow-sm">
                                 <thead class="table-dark">
@@ -102,6 +103,7 @@
                                         <th><i class="fas fa-users me-2"></i> Role</th>
                                         <th><i class="fas fa-thumbs-up me-2 text-success"></i> Upvotes</th>
                                         <th><i class="fas fa-thumbs-down me-2 text-danger"></i> Downvotes</th>
+                                        <th><i class="fas fa-equals me-1"></i> </i> Result</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -109,10 +111,14 @@
                                         <tr>
                                             <td class="fw-semibold">{{ $godRole->role->name }}</td>
                                             <td class="text-success fw-bold">
-                                                <i class="fas fa-arrow-up me-1"></i> {{ $godRole->upvotes_count }}
+                                                <i class="fas fa-arrow-up me-1"></i> {{ $godRole->upvotes }}
                                             </td>
                                             <td class="text-danger fw-bold">
-                                                <i class="fas fa-arrow-down me-1"></i> {{ $godRole->downvotes_count }}
+                                                <i class="fas fa-arrow-down me-1"></i> {{ $godRole->downvotes }}
+                                            </td>
+                                            <td class="text-primary fw-bold">
+
+                                                {{ $godRole->upvotes - $godRole->downvotes }}
                                             </td>
                                         </tr>
                                     @endforeach
@@ -121,6 +127,58 @@
                         </div>
                     </div>
                 @endif
+                <hr />
+                {{-- Display BEST COUNTER PICK FOR THIS GOD --}}
+                @php
+                    $counterVotes = \App\Models\GodsCounter::getVotesGroupedByCounter($data->id);
+                @endphp
+
+                @if ($counterVotes->count() > 0)
+                    <div class="mt-4">
+                        <h5 class="text-primary fw-bold">
+                            <i class="fas fa-user-shield me-2"></i>BEST COUNTER PICK FOR THIS GOD
+                        </h5>
+                        <div class="table-responsive">
+                            <table
+                                class="table table-bordered table-striped table-hover text-center align-middle shadow-sm">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th><i class="fas fa-users me-2"></i> Counter God</th>
+                                        <th><i class="fas fa-thumbs-up me-2 text-success"></i> Upvotes</th>
+                                        <th><i class="fas fa-thumbs-down me-2 text-danger"></i> Downvotes</th>
+                                        <th><i class="fas fa-equals me-1"></i> </i> Result</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($counterVotes as $vote)
+                                        <tr>
+                                            <td class="fw-semibold">
+                                                @if ($vote->counterGod)
+                                                    <img src="{{ asset($vote->counterGod->thumbnail) }}"
+                                                        alt="{{ $vote->counterGod->title }}" width="32" height="32"
+                                                        class="me-2 rounded-circle">
+                                                    {{ $vote->counterGod->title }}
+                                                @else
+                                                    Unknown
+                                                @endif
+                                            </td>
+                                            <td class="text-success fw-bold">
+                                                <i class="fas fa-arrow-up me-1"></i> {{ $vote->upvotes }}
+                                            </td>
+                                            <td class="text-danger fw-bold">
+                                                <i class="fas fa-arrow-down me-1"></i> {{ $vote->downvotes }}
+                                            </td>
+                                            <td class="text-primary fw-bold">
+                                                {{ $vote->upvotes - $vote->downvotes }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @endif
+
 
 
             </div>

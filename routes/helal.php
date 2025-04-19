@@ -12,6 +12,7 @@
 use App\Http\Controllers\Web\Backend\CMS\HomePageController;
 use App\Http\Controllers\Web\Backend\CMS\HomePageSocialLinkContainerController;
 use App\Http\Controllers\Web\Backend\GodsController;
+use App\Http\Controllers\Web\Backend\VoteController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\Backend\ProfileController;
 use App\Http\Controllers\Web\Backend\DynamicPageController;
@@ -58,6 +59,12 @@ Route::middleware(['auth:web', 'role_check'])->prefix('admin')->group(function (
   Route::resource('/gods', GodsController::class)->names('gods');
   Route::post('/gods/status/{id}', [GodsController::class, 'status'])->name('gods.status');
   Route::delete('/ability/destroy/{id}', [GodsController::class, 'deleteAbility'])->name('ability.destroy');
+
+  // Route VoteController
+  Route::get('/reset-role-votes', [VoteController::class, 'index'])->name('vote.index');
+  Route::get('/reset-role-votes/reset', [VoteController::class, 'ResetRoleVotes'])->name('vote.reset_role_votes');
+  Route::get('/reset-god-votes/reset', [VoteController::class, 'ResetSingleGodVotes'])->name('vote.reset_god_votes');
+  Route::get('/reset-counter-votes/reset', [VoteController::class, 'ResetCounterVotes'])->name('vote.reset_counter_votes');
 });
 
 
