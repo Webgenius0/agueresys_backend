@@ -12,6 +12,7 @@
 use App\Http\Controllers\Web\Backend\CMS\HomePageController;
 use App\Http\Controllers\Web\Backend\CMS\HomePageSocialLinkContainerController;
 use App\Http\Controllers\Web\Backend\GodsController;
+use App\Http\Controllers\Web\Backend\RoleController;
 use App\Http\Controllers\Web\Backend\VoteController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\Backend\ProfileController;
@@ -65,6 +66,10 @@ Route::middleware(['auth:web', 'role_check'])->prefix('admin')->group(function (
   Route::get('/reset-role-votes/reset', [VoteController::class, 'ResetRoleVotes'])->name('vote.reset_role_votes');
   Route::get('/reset-god-votes/reset', [VoteController::class, 'ResetSingleGodVotes'])->name('vote.reset_god_votes');
   Route::get('/reset-counter-votes/reset', [VoteController::class, 'ResetCounterVotes'])->name('vote.reset_counter_votes');
+
+  // Route for RoleController
+  Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+  Route::get('/roles/show/{roleId}', [RoleController::class, 'show'])->name('roles.show');
 });
 
 

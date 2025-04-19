@@ -40,12 +40,12 @@
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="code7-tab" data-bs-toggle="tab" data-bs-target="#code7-tab-pane"
                                 type="button" role="tab" aria-controls="code7-tab-pane" aria-selected="false"
-                                tabindex="-1">ROLE FOR A SPECIFIC GOD</button>
+                                tabindex="-1">ROLE FOR ALL SPECIFIC GOD</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="code8-tab" data-bs-toggle="tab" data-bs-target="#code8-tab-pane"
                                 type="button" role="tab" aria-controls="code8-tab-pane" aria-selected="false"
-                                tabindex="-1">COUNTER PICK FOR THIS GOD</button>
+                                tabindex="-1">COUNTER PICK FOR ALL GOD</button>
                         </li>
                     </ul>
                     <div class="tab-content" id="myTabContent7">
@@ -53,8 +53,8 @@
                             aria-labelledby="preview7-tab" tabindex="0">
                             <div class="d-flex gap-2 flex-wrap">
                                 <a href="{{ route('vote.reset_role_votes') }}" type="button"
-                                    class="btn btn-primary fw-medium text-white py-3 px-4 w-100">Reset GOD FOR THE ROLE
-                                    Votes</a>
+                                    class="btn btn-primary fw-medium text-white py-3 px-4 w-100">RESET GOD FOR THE ROLE
+                                    VOTES</a>
 
                             </div>
                         </div>
@@ -62,8 +62,8 @@
                             tabindex="0">
                             <div class="d-flex gap-2 flex-wrap">
                                 <a href="{{ route('vote.reset_god_votes') }}" type="button"
-                                    class="btn btn-primary fw-medium text-white py-3 px-4 w-100">Reset
-                                    ROLE FOR A SPECIFIC GOD Votes</a>
+                                    class="btn btn-primary fw-medium text-white py-3 px-4 w-100">RESET
+                                    ROLE FOR ALL SPECIFIC GOD VOTES</a>
 
                             </div>
                         </div>
@@ -71,8 +71,8 @@
                             tabindex="0">
                             <div class="d-flex gap-2 flex-wrap">
                                 <a href="{{ route('vote.reset_counter_votes') }}" type="button"
-                                    class="btn btn-primary fw-medium text-white py-3 px-4 w-100">Reset
-                                    COUNTER PICK FOR THIS GOD Votes</a>
+                                    class="btn btn-primary fw-medium text-white py-3 px-4 w-100">RESET
+                                    COUNTER PICK FOR ALL GOD VOTES</a>
 
                             </div>
                         </div>
