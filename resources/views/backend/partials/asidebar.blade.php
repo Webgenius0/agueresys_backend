@@ -45,7 +45,8 @@ $systemSetting = App\Models\SystemSetting::first();
                             class="menu-link {{ request()->routeIs('gods.index') ? 'active' : '' }}">
                             Gods List
                         </a>
-                        <a href="{{ route('gods.create') }}" class="menu-link {{ request()->routeIs('gods.create') ? 'active' : '' }}">
+                        <a href="{{ route('gods.create') }}"
+                            class="menu-link {{ request()->routeIs('gods.create') ? 'active' : '' }}">
                             Add Gods
                         </a>
                     </li>
@@ -53,7 +54,7 @@ $systemSetting = App\Models\SystemSetting::first();
                 </ul>
             </li>
             <!-- Vote Menu Item -->
-            <li class="menu-item {{ request()->routeIs('vote*') ? 'open' : '' }}">
+            <li class="menu-item {{ request()->routeIs('vote.*') ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle active">
                     <span class="material-symbols-outlined menu-icon">how_to_vote</span>
                     <span class="title">Vote</span>
@@ -69,15 +70,15 @@ $systemSetting = App\Models\SystemSetting::first();
                 </ul>
             </li>
             <!-- Role Menu Item -->
-            <li class="menu-item {{ request()->routeIs('vote*') ? 'open' : '' }}">
+            <li class="menu-item {{ request()->routeIs('roles.*') ? 'open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle active">
                     <span class="material-symbols-outlined menu-icon">add_moderator</span>
                     <span class="title">Role</span>
                 </a>
                 <ul class="menu-sub">
                     <li class="menu-item">
-                        <a href="{{ route('vote.index') }}"
-                            class="menu-link {{ request()->routeIs('vote.index') ? 'active' : '' }}">
+                        <a href="{{ route('roles.index') }}"
+                            class="menu-link {{ request()->routeIs('roles.index') ? 'active' : '' }}">
                             View Role Data
                         </a>
                     </li>
@@ -175,7 +176,6 @@ $systemSetting = App\Models\SystemSetting::first();
 
                 </ul>
             </li>
-
 
             <!-- Logout Menu Item -->
             <li class="menu-item">
