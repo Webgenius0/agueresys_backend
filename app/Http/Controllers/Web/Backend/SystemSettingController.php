@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers\Web\Backend;
 
+use App\Enums\Page;
+use App\Enums\Section;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\Models\CMS;
 use App\Models\SystemSetting;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 class SystemSettingController extends Controller
 {
@@ -133,4 +138,33 @@ class SystemSettingController extends Controller
         }
     }
 
+    public function getCookieText(Request $request)
+    {
+        $data = CMS::where('page', Page::HomePage->value)->where('section', Section::CookieText->value)->first();
+        return view("backend.layouts.settings.cookie_set", compact('data'));
+    }
+    public function updateCookieText(Request $request)
+    {
+        $validatedData = $request->validate(
+            [
+                'description' => 'required|string|max:1000'
+            ]
+        );
+
+        try {
+            CMS::updateOrCreate(
+                [
+                    'page' => Page::HomePage->value,
+                    'section' => Section::CookieText->value,
+                ],
+                $validatedData
+            );
+            flash()->success('Cookie Text Updated Successfully');
+            return redirect()->back();
+        } catch (Exception $e) {
+            Log::error("SystemSettingController::update" . $e->getMessage());
+            flash()->error('Cookie Text Update Unsuccessfully');
+            return redirect()->back();
+        }
+    }
 }
