@@ -46,6 +46,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/cms/home-page/banner', [HomePageController::class, 'getHomeBanner']);
 Route::get('/cms/social-link', [HomePageController::class, 'getSocialLinks']);
 Route::get('/cms/system-info', [HomePageController::class, 'getSystemInfo']);
+Route::get('/cms/cookie-text', [HomePageController::class, 'getCookieText']);
 
 // dynamic page
 Route::get("dynamic-pages", [HomePageController::class, "getDynamicPages"]);

@@ -36,11 +36,11 @@
                         class="btn btn-primary border border-primary bg-primary text-white py-2 px-3 fw-semibold">System
                         Settings</a>
                 </li>
-                {{-- <li>
-                    <a href="{{route('system_settings.mail_get')}}"
-                        class="btn btn-primary border border-primary bg-transparent text-primary py-2 px-3 fw-semibold">Mail
+                <li>
+                    <a href="{{route('system_settings.cookie_get')}}"
+                        class="btn btn-primary border border-primary bg-transparent text-primary py-2 px-3 fw-semibold">Cookie
                         <Source:media:sizes></Source:media:sizes>Settings</a>
-                </li> --}}
+                </li>
             </ul>
 
             <div class="mb-4">

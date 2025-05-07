@@ -142,4 +142,24 @@ class HomePageController extends Controller
             return Helper::jsonErrorResponse('Failed to retrieve Dynamic page data.', 403);
         }
     }
+
+    public function getCookieText(Request $request): JsonResponse
+    {
+        try {
+            $data = CMS::where('page', Page::HomePage)->where('section', Section::CookieText)
+                ->select('id', 'description')
+                ->first();
+            // if (!$data) {
+            //     return Helper::jsonResponse(true, 'No data found', 200, []);
+            // }
+            $data = [
+                'id' => $data->id ?? 1,
+                'description' => $data->description ?? 'This website uses cookies to enhance your experience. By continuing to browse, you accept our use of cookies.',
+            ];
+            return Helper::jsonResponse(true, 'Cookie text retrieved successfully.', 200, $data);
+        } catch (Exception $e) {
+            Log::error("API::HomePageController::getCookieText" . $e->getMessage());
+            return Helper::jsonErrorResponse('Failed to retrieve Cookie text', 403);
+        }
+    }
 }

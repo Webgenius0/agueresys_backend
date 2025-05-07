@@ -34,6 +34,8 @@ Route::middleware(['auth:web', 'role_check'])->prefix('admin')->group(function (
   Route::post('settings-profile', [ProfileController::class, 'update'])->name('profile_settings.update');
   Route::get('settings-profile-password', [ProfileController::class, 'passwordChange'])->name('profile_settings.password_change');
   Route::post('settings-profile-password', [ProfileController::class, 'UpdatePassword'])->name('profile_settings.password');
+  Route::get('settings-cookie', [SystemSettingController::class, 'getCookieText'])->name('system_settings.cookie_get');
+  Route::post('settings-cookie', [SystemSettingController::class, 'updateCookieText'])->name('system_settings.cookie_update');
 
   // Route for system settings index
   Route::get('system-settings', [SystemSettingController::class, 'index'])->name('system_settings.index');
